@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin Dashboard — Ayaan PWD</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+body{background:#F0F2F5;overflow-x:hidden}
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{background:var(--blue);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-brand{padding:20px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo{font-family:var(--ff-head);font-size:17px;font-weight:800;color:#fff}
+.sb-logo em{color:#ffd700;font-style:normal}
+.sb-role-pill{display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.sb-user{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px;background:rgba(255,255,255,.07);border-radius:8px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;font-family:var(--ff-head);flex-shrink:0}
+.sb-uname{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;line-height:1.4}
+.sb-uname small{display:block;font-size:10px;color:rgba(255,255,255,.35);font-weight:400}
+.sb-nav{padding:10px;flex:1}
+.sb-sec{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:14px 10px 6px}
+.sb-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:7px;color:rgba(255,255,255,.55);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:var(--ff-head)}
+.sb-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.sb-link.active{background:var(--red);color:#fff}
+.sb-link .ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-count{margin-left:auto;background:rgba(255,255,255,.15);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px}
+.sb-count.red{background:var(--red)}
+.sb-bottom{padding:10px;border-top:1px solid rgba(255,255,255,.08)}
+
+/* MAIN */
+.main{padding:22px;overflow-y:auto;min-width:0}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.pg-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.pg-title{font-family:var(--ff-head);font-size:22px;font-weight:800;color:var(--ink)}
+.pg-sub{font-size:12px;color:var(--ink-3);margin-top:3px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;border-top:3px solid var(--blue)}
+.stat.red{border-top-color:var(--red)}
+.stat.green{border-top-color:var(--green)}
+.stat.orange{border-top-color:#ff6b00}
+.stat-icon{font-size:22px;margin-bottom:6px}
+.stat-val{font-family:var(--ff-head);font-size:24px;font-weight:800;color:var(--ink)}
+.stat-lbl{font-size:11px;color:var(--ink-3);margin-top:1px}
+
+/* CARDS */
+.panel-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.panel-card-title{font-family:var(--ff-head);font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;background:var(--white);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.tbl th{background:var(--bg);text-align:left;padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg)}
+.tbl-acts{display:flex;gap:5px;flex-wrap:wrap}
+.tbl-btn{padding:4px 9px;border-radius:5px;font-size:10px;font-weight:700;border:none;cursor:pointer;transition:all .2s;font-family:var(--ff-head);white-space:nowrap}
+.tb-edit{background:var(--blue-lt);color:var(--blue)}.tb-edit:hover{background:var(--blue);color:#fff}
+.tb-del{background:var(--red-lt);color:var(--red)}.tb-del:hover{background:var(--red);color:#fff}
+.tb-ok{background:var(--green-lt);color:var(--green)}.tb-ok:hover{background:var(--green);color:#fff}
+.tb-dup{background:#fff3cd;color:#856404}.tb-dup:hover{background:#ffc107;color:#000}
+.tb-hide{background:var(--bg);color:var(--ink-3)}.tb-hide:hover{background:var(--ink-3);color:#fff}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.s-box{display:flex;align-items:center;gap:8px;background:var(--white);border:2px solid var(--border);border-radius:7px;padding:7px 12px;transition:border-color .2s;flex:1;min-width:180px}
+.s-box:focus-within{border-color:var(--blue)}
+.s-box input{border:none;outline:none;font-size:13px;color:var(--ink);background:none;width:100%;font-family:var(--ff-body)}
+.sel-sm{padding:7px 12px;border:2px solid var(--border);border-radius:7px;font-size:12px;color:var(--ink);background:var(--white);cursor:pointer;outline:none;font-family:var(--ff-body)}
+.sel-sm:focus{border-color:var(--blue)}
+.bulk-bar{background:var(--blue-lt);border:1.5px solid var(--blue);border-radius:7px;padding:10px 14px;display:none;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.bulk-bar.show{display:flex}
+.bulk-bar span{font-size:12px;font-weight:700;color:var(--blue)}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.form-full{grid-column:1/-1}
+.img-zone{border:2px dashed var(--border);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--bg)}
+.img-zone:hover,.img-zone.drag{border-color:var(--blue);background:var(--blue-lt)}
+.img-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-prev{max-width:100%;max-height:150px;border-radius:7px;margin-top:10px;object-fit:contain}
+.sz-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.sz-tag{display:flex;align-items:center;gap:4px;background:var(--blue-lt);color:var(--blue);font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px}
+.sz-tag button{border:none;background:none;cursor:pointer;color:var(--blue);font-size:13px;line-height:1;padding:0}
+.sz-add-row{display:flex;gap:7px;margin-top:7px}
+
+/* TOGGLE */
+.tog{position:relative;display:inline-block;width:36px;height:20px}
+.tog input{opacity:0;width:0;height:0;position:absolute}
+.tog-sl{position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:20px;transition:.3s}
+.tog-sl:before{content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+.tog input:checked+.tog-sl{background:var(--red)}
+.tog input:checked+.tog-sl:before{transform:translateX(16px)}
+.tog.green input:checked+.tog-sl{background:var(--green)}
+.tog.blue input:checked+.tog-sl{background:var(--blue)}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:9px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-lbl{font-size:11px;color:var(--ink-2);min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;background:var(--bg);border-radius:4px;height:18px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--blue);transition:width .6s}
+.bar-fill.red{background:var(--red)}
+.bar-fill.green{background:var(--green)}
+.bar-val{font-size:11px;font-weight:600;min-width:32px;text-align:right}
+
+/* COUPON */
+.coupon-card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.coupon-code{font-family:var(--ff-head);font-size:18px;font-weight:800;color:var(--blue);letter-spacing:.08em;background:var(--blue-lt);padding:6px 14px;border-radius:6px;border:1.5px dashed var(--blue)}
+.coupon-info{flex:1;min-width:120px}
+.coupon-disc{font-weight:800;font-size:15px;color:var(--red);font-family:var(--ff-head)}
+.coupon-exp{font-size:11px;color:var(--ink-3)}
+.coupon-uses{font-size:11px;color:var(--ink-2);margin-top:2px}
+
+/* CAT CARD */
+.cat-mgr-card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:9px;cursor:grab}
+.cat-mgr-card:active{cursor:grabbing;box-shadow:var(--shadow-lg)}
+.cat-icon-preview{width:40px;height:40px;border-radius:8px;background:var(--blue-lt);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cat-mgr-info{flex:1;min-width:100px}
+.cat-mgr-name{font-family:var(--ff-head);font-weight:700;font-size:14px}
+.cat-mgr-desc{font-size:11px;color:var(--ink-3)}
+.cat-prod-count{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-lt);padding:3px 8px;border-radius:20px}
+
+/* TRUST EDITOR */
+.trust-editor-row{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.trust-editor-row input{flex:1;min-width:80px;padding:6px 10px;border:1.5px solid var(--border);border-radius:5px;font-size:13px;font-family:var(--ff-body);outline:none}
+.trust-editor-row input:focus{border-color:var(--blue)}
+
+/* STAFF */
+.staff-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;transition:box-shadow .2s}
+.staff-card:hover{box-shadow:0 4px 16px rgba(0,48,135,.1)}
+.staff-av{width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;font-family:var(--ff-head);font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.staff-av.disabled{background:var(--ink-3)}
+.staff-id-badge{background:var(--blue-lt);color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:.06em;font-family:var(--ff-head)}
+.staff-perm-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.staff-perm-chip{background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:10px;font-weight:600;padding:2px 7px;color:var(--ink-2)}
+.staff-perm-chip.granted{background:rgba(0,48,135,.07);border-color:rgba(0,48,135,.2);color:var(--blue)}
+.sf-perm-row{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:9px 12px;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s}
+.sf-perm-row:hover{border-color:var(--blue);background:var(--blue-lt)}
+.sf-perm-row input{accent-color:var(--blue)}
+.staff-actions{display:flex;gap:7px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.staff-meta{font-size:11px;color:var(--ink-3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.staff-meta span{display:flex;align-items:center;gap:3px}
+
+/* ORDER */
+.inq-card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:16px;margin-bottom:10px}
+.inq-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+
+/* ACCOUNT FORM */
+.acc-form{max-width:500px}
+.login-hist-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px}
+.login-hist-row:last-child{border-bottom:none}
+
+/* COLOR PICKER WRAP */
+.color-field{display:flex;align-items:center;gap:10px}
+.color-field input[type=color]{width:40px;height:36px;border:2px solid var(--border);border-radius:6px;cursor:pointer;padding:2px}
+.color-field input[type=text]{flex:1}
+
+/* SECTION TOGGLE GRID */
+.section-toggles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px}
+.sec-toggle-card{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sec-toggle-info{flex:1}
+.sec-toggle-name{font-weight:700;font-size:13px}
+.sec-toggle-desc{font-size:11px;color:var(--ink-3);margin-top:2px}
+
+/* REPORT TABLE */
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.report-row:last-child{border-bottom:none}
+.report-row strong{font-family:var(--ff-head)}
+
+/* 2col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* FABRIC/SIZE PRESETS */
+.preset-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.preset-tag{display:flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);color:var(--ink-2);font-size:12px;font-weight:600;padding:4px 10px;border-radius:20px}
+.preset-tag button{border:none;background:none;cursor:pointer;color:var(--red);font-size:14px;line-height:1}
+
+@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{height:auto;position:static}.stats{grid-template-columns:repeat(2,1fr)}.two-col,.three-col{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">Ayaan <em>PWD</em></div>
+    <div class="sb-role-pill" id="sb-role-pill">Admin</div>
+    <div class="sb-user">
+      <div class="sb-av" id="sb-av">U</div>
+      <div class="sb-uname" id="sb-uname">Usman<small>Administrator</small></div>
+    </div>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-sec">Overview</div>
+    <button class="sb-link active" onclick="go('dashboard',this)"><span class="ico">📊</span>Dashboard</button>
+
+    <div class="sb-sec">Products</div>
+    <button class="sb-link" onclick="go('products',this)"><span class="ico">📦</span>All Products</button>
+    <button class="sb-link" onclick="go('add-product',this)"><span class="ico">➕</span>Add Product</button>
+
+    <div class="sb-sec">Orders</div>
+    <button class="sb-link" onclick="go('orders',this)"><span class="ico">📋</span>Inquiries Inbox <span class="sb-count red" id="sb-pending-ct"></span></button>
+
+    <div class="sb-sec admin-only" style="display:none">Store</div>
+    <button class="sb-link admin-only" onclick="go('homepage',this)" style="display:none"><span class="ico">🏠</span>Homepage</button>
+    <button class="sb-link admin-only" onclick="go('categories',this)" style="display:none"><span class="ico">🗂</span>Categories</button>
+    <button class="sb-link admin-only" onclick="go('appearance',this)" style="display:none"><span class="ico">🎨</span>Appearance</button>
+    <button class="sb-link admin-only" onclick="go('promotions',this)" style="display:none"><span class="ico">🏷</span>Promotions</button>
+    <button class="sb-link admin-only" onclick="go('presets',this)" style="display:none"><span class="ico">⚙️</span>Presets</button>
+    <button class="sb-link admin-only" onclick="go('contact',this)" style="display:none"><span class="ico">📞</span>Contact Info</button>
+
+    <div class="sb-sec admin-only" style="display:none">People</div>
+    <button class="sb-link admin-only" onclick="go('staff',this)" style="display:none"><span class="ico">👥</span>Staff</button>
+    <button class="sb-link admin-only" onclick="go('customers',this)" style="display:none"><span class="ico">🛍</span>Customers</button>
+
+    <div class="sb-sec admin-only" style="display:none">Reports</div>
+    <button class="sb-link admin-only" onclick="go('analytics',this)" style="display:none"><span class="ico">📈</span>Analytics</button>
+    <button class="sb-link admin-only" onclick="go('reports',this)" style="display:none"><span class="ico">📄</span>Reports</button>
+
+    <div class="sb-sec admin-only" style="display:none">Security</div>
+    <button class="sb-link admin-only" onclick="go('my-account',this)" style="display:none"><span class="ico">🔐</span>My Account</button>
+    <button class="sb-link admin-only" onclick="go('settings',this)" style="display:none"><span class="ico">⚙️</span>Settings</button>
+  </div>
+  <div class="sb-bottom">
+    <a class="sb-link" href="index.html" target="_blank"><span class="ico">🌐</span>View Store</a>
+    <button class="sb-link" onclick="logout()" style="color:rgba(255,150,150,.8)"><span class="ico">🚪</span>Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="tab-panel active" id="tab-dashboard">
+  <div class="pg-hd"><div><div class="pg-title">Dashboard</div><div class="pg-sub" id="dash-date"></div></div></div>
+  <div class="stats" id="stats-grid"></div>
+  <div class="two-col">
+    <div class="panel-card"><div class="panel-card-title">⚠️ Low Stock Alerts</div><div id="low-stock-list"></div></div>
+    <div class="panel-card"><div class="panel-card-title">📋 Recent Orders</div><div id="recent-orders"></div></div>
+  </div>
+  <div class="two-col">
+    <div class="panel-card"><div class="panel-card-title">📊 Category Breakdown</div><div class="bar-chart" id="cat-bars"></div></div>
+    <div class="panel-card"><div class="panel-card-title">🕐 Recent Logins</div><div id="login-hist-preview"></div></div>
+  </div>
+</div>
+
+<!-- ═══ ALL PRODUCTS ═══ -->
+<div class="tab-panel" id="tab-products">
+  <div class="pg-hd">
+    <div><div class="pg-title">All Products</div><div class="pg-sub" id="prod-sub"></div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline-blue btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+      <button class="btn btn-red" onclick="go('add-product',null)">+ Add Product</button>
+    </div>
+  </div>
+  <div class="bulk-bar" id="bulk-bar">
+    <span id="bulk-ct">0 selected</span>
+    <button class="btn btn-sm btn-red" onclick="bulkAction('sale')">Mark as Sale</button>
+    <button class="btn btn-sm btn-outline-blue" onclick="bulkAction('hide')">Hide</button>
+    <button class="btn btn-sm btn-outline-blue" onclick="bulkAction('show')">Show</button>
+    <button class="btn btn-sm" style="background:#ffeeba;color:#856404" onclick="bulkAction('delete')">Delete</button>
+    <button class="btn btn-sm btn-ghost" onclick="clearBulk()">Cancel</button>
+  </div>
+  <div class="toolbar">
+    <div class="s-box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="prod-q" placeholder="Search products..." oninput="renderProducts()"/></div>
+    <select class="sel-sm" id="prod-cat-f" onchange="renderProducts()"><option value="">All Categories</option></select>
+    <select class="sel-sm" id="prod-vis-f" onchange="renderProducts()"><option value="">All</option><option value="visible">Visible</option><option value="hidden">Hidden</option></select>
+    <select class="sel-sm" id="prod-sort" onchange="renderProducts()"><option value="default">Default</option><option value="price-asc">Price ↑</option><option value="price-desc">Price ↓</option><option value="stock-asc">Stock ↑</option><option value="views">Most Viewed</option></select>
+  </div>
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><th><input type="checkbox" id="chk-all" onchange="toggleAllChk(this)"/></th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Visible</th><th>Sale</th><th>Pinned</th><th>Actions</th></tr></thead><tbody id="prod-tbody"></tbody></table></div>
+</div>
+
+<!-- ═══ ADD / EDIT PRODUCT ═══ -->
+<div class="tab-panel" id="tab-add-product">
+  <div class="pg-hd"><div><div class="pg-title" id="add-prod-title">Add New Product</div><div class="pg-sub">Fill in details and upload image</div></div><button class="btn btn-ghost btn-sm" onclick="resetProdForm();go('products',null)">← Back to Products</button></div>
+  <div style="max-width:740px">
+    <input type="hidden" id="edit-id"/>
+    <div class="panel-card">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-label">Product Image</label>
+          <div class="img-zone" id="img-zone">
+            <input type="file" id="img-file" accept="image/*" onchange="handleImg(this)"/>
+            <div id="img-ph"><div style="font-size:28px;margin-bottom:6px">📷</div><div style="font-size:13px;color:var(--ink-3)">Click or drag & drop (PNG/JPG/WebP, max 5MB)</div></div>
+            <img id="img-prev-el" class="img-prev" style="display:none"/>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Product Name *</label><input type="text" id="p-name" class="form-input" placeholder="e.g. Lawn Printed 3-Piece"/><div class="form-error" id="p-name-err"></div></div>
+        <div class="form-group"><label class="form-label">Category *</label><select id="p-cat" class="form-input form-select" onchange="loadSizePreset()"></select></div>
+        <div class="form-group"><label class="form-label">Price (PKR) *</label><input type="number" id="p-price" class="form-input" placeholder="2500"/><div class="form-error" id="p-price-err"></div></div>
+        <div class="form-group"><label class="form-label">Original Price (if on sale — leave blank if none)</label><input type="number" id="p-old" class="form-input" placeholder="3200"/></div>
+        <div class="form-group"><label class="form-label">Fabric *</label>
+          <input type="text" id="p-fabric" class="form-input" placeholder="e.g. Lawn" list="fabric-list"/>
+          <datalist id="fabric-list"></datalist>
+          <div class="form-error" id="p-fabric-err"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Stock Quantity</label><input type="number" id="p-stock" class="form-input" value="10"/></div>
+        <div class="form-group"><label class="form-label">Badge</label><select id="p-badge" class="form-input form-select"><option value="new">New Arrival</option><option value="hot">Popular / Hot</option><option value="sale">On Sale</option></select></div>
+        <div class="form-group form-full">
+          <label class="form-label">Sizes</label>
+          <div class="sz-add-row"><input type="text" id="sz-inp" class="form-input" placeholder="Type size e.g. S, M or 4Y" style="flex:1"/><button class="btn btn-blue btn-sm" onclick="addSz()">Add</button><button class="btn btn-outline-blue btn-sm" onclick="loadSizePreset()">Load Preset</button></div>
+          <div class="sz-tags" id="sz-tags"></div>
+          <div class="form-hint" style="margin-top:6px">Type size and press Add, or separate with commas. Click "Load Preset" to auto-fill sizes for the selected category.</div>
+        </div>
+        <div class="form-group form-full"><label class="form-label">Description</label><textarea id="p-desc" class="form-input" rows="3" placeholder="Fabric quality, what's included, styling notes..."></textarea></div>
+        <div class="form-group"><label class="form-label">Visibility</label>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:6px"><label class="tog blue"><input type="checkbox" id="p-visible" checked/><span class="tog-sl"></span></label><span style="font-size:13px;color:var(--ink-2)">Show on store</span></div>
+        </div>
+        <div class="form-group"><label class="form-label">Pin to Top</label>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:6px"><label class="tog blue"><input type="checkbox" id="p-pinned"/><span class="tog-sl"></span></label><span style="font-size:13px;color:var(--ink-2)">Pin this product to top</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn btn-red btn-lg" onclick="saveProd()">💾 Save Product</button>
+        <button class="btn btn-outline-blue btn-lg" onclick="resetProdForm()">Reset Form</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ORDERS INBOX ═══ -->
+<div class="tab-panel" id="tab-orders">
+  <div class="pg-hd">
+    <div><div class="pg-title">Inquiries & Orders</div><div class="pg-sub">Manage WhatsApp orders · Update statuses · Add notes</div></div>
+    <button class="btn btn-red" onclick="showAddOrderModal()">+ Log New Order</button>
+  </div>
+  <div class="toolbar">
+    <select class="sel-sm" id="ord-status-f" onchange="renderOrders()"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="delivered">Delivered</option></select>
+  </div>
+  <div id="orders-list"></div>
+</div>
+
+<!-- ═══ HOMEPAGE MANAGER ═══ -->
+<div class="tab-panel" id="tab-homepage">
+  <div class="pg-hd"><div><div class="pg-title">Homepage Manager</div><div class="pg-sub">Edit hero section · Announce bar · Featured products</div></div></div>
+  <div class="two-col">
+    <div>
+      <div class="panel-card">
+        <div class="panel-card-title">📣 Announce Bar</div>
+        <div class="form-group"><label class="form-label">Bar Text (HTML allowed)</label><input type="text" id="s-announce" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Background Color</label><div class="color-field"><input type="color" id="s-announce-bg"/><input type="text" id="s-announce-bg-txt" class="form-input" placeholder="#003087" oninput="document.getElementById('s-announce-bg').value=this.value"/></div></div>
+      </div>
+      <div class="panel-card">
+        <div class="panel-card-title">🦸 Hero Section</div>
+        <div class="form-group"><label class="form-label">Heading (use \n for line break)</label><input type="text" id="s-hero-h" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Sub-text</label><input type="text" id="s-hero-sub" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Sale Badge Text</label><input type="text" id="s-badge" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Show Sale Badge</label><div style="display:flex;align-items:center;gap:10px;margin-top:6px"><label class="tog"><input type="checkbox" id="s-badge-on"/><span class="tog-sl"></span></label><span style="font-size:13px;color:var(--ink-2)">On/Off</span></div></div>
+        <div class="form-group"><label class="form-label">Hero Background Color</label><div class="color-field"><input type="color" id="s-hero-bg"/><input type="text" id="s-hero-bg-txt" class="form-input" oninput="document.getElementById('s-hero-bg').value=this.value"/></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel-card">
+        <div class="panel-card-title">⭐ Featured Products</div>
+        <div class="form-hint" style="margin-bottom:10px">Select products to appear in the "Best Sellers" section on homepage.</div>
+        <div id="featured-picker" style="max-height:260px;overflow-y:auto"></div>
+      </div>
+      <div class="panel-card" style="margin-top:16px">
+        <div class="panel-card-title">🔴 Global Sale Banner</div>
+        <div class="form-group"><label class="form-label">Banner Text (shown above all sale items)</label><input type="text" id="s-global-sale" class="form-input" placeholder="e.g. RAMZAN SALE — 20% off everything!"/></div>
+        <div class="form-group"><label class="form-label">Enable Global Sale</label><div style="display:flex;align-items:center;gap:10px;margin-top:6px"><label class="tog"><input type="checkbox" id="s-global-sale-on"/><span class="tog-sl"></span></label><span style="font-size:13px;color:var(--ink-2)">Show on store</span></div></div>
+      </div>
+      <button class="btn btn-red btn-full" style="margin-top:12px" onclick="saveHomepage()">💾 Save Homepage</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CATEGORIES ═══ -->
+<div class="tab-panel" id="tab-categories">
+  <div class="pg-hd"><div><div class="pg-title">Category Manager</div><div class="pg-sub">Add, rename, reorder or hide categories</div></div><button class="btn btn-red" onclick="showAddCat()">+ Add Category</button></div>
+  <div class="panel-card" id="add-cat-form" style="display:none;max-width:480px;margin-bottom:16px">
+    <div class="panel-card-title" id="cat-form-title">Add New Category</div>
+    <input type="hidden" id="cat-edit-id"/>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Label (Display Name)</label><input type="text" id="cat-label" class="form-input" placeholder="e.g. Men's"/></div>
+      <div class="form-group"><label class="form-label">Icon (emoji)</label><input type="text" id="cat-icon" class="form-input" placeholder="👔" maxlength="4"/></div>
+      <div class="form-group form-full"><label class="form-label">Description</label><input type="text" id="cat-desc" class="form-input" placeholder="e.g. Shalwar Kameez, Kurta, Formal"/></div>
+    </div>
+    <div style="display:flex;gap:8px"><button class="btn btn-red" onclick="saveCat()">Save Category</button><button class="btn btn-ghost" onclick="document.getElementById('add-cat-form').style.display='none'">Cancel</button></div>
+  </div>
+  <div id="cat-list"></div>
+  <div class="panel-card" style="margin-top:12px;background:var(--blue-lt);border-color:rgba(0,48,135,.2)">
+    <p style="font-size:13px;color:var(--blue);font-weight:500">💡 <strong>Tip:</strong> Hiding a category keeps its products in the database — they just won't show in navigation or the shop. Deleting a category is permanent but won't delete its products.</p>
+  </div>
+</div>
+
+<!-- ═══ APPEARANCE ═══ -->
+<div class="tab-panel" id="tab-appearance">
+  <div class="pg-hd"><div><div class="pg-title">Appearance</div><div class="pg-sub">Logo, colors, trust bar, store info</div></div></div>
+  <div class="two-col">
+    <div>
+      <div class="panel-card">
+        <div class="panel-card-title">🏪 Store Identity</div>
+        <div class="form-group"><label class="form-label">Store Name</label><input type="text" id="s-name" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Tagline</label><input type="text" id="s-tagline" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Logo Text (shown in nav)</label><input type="text" id="s-logo-text" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Logo Image (URL or upload)</label><input type="text" id="s-logo-img" class="form-input" placeholder="Leave blank to use text logo"/></div>
+      </div>
+      <div class="panel-card" style="margin-top:16px">
+        <div class="panel-card-title">🎨 Accent Colors</div>
+        <div class="form-group"><label class="form-label">Primary Red (buttons, sale, CTAs)</label><div class="color-field"><input type="color" id="s-red"/><input type="text" id="s-red-txt" class="form-input" oninput="document.getElementById('s-red').value=this.value"/></div></div>
+        <div class="form-group"><label class="form-label">Primary Blue (nav, headers, trust)</label><div class="color-field"><input type="color" id="s-blue"/><input type="text" id="s-blue-txt" class="form-input" oninput="document.getElementById('s-blue').value=this.value"/></div></div>
+        <div class="form-hint">Note: Color changes apply after saving and refreshing the store.</div>
+      </div>
+    </div>
+    <div>
+      <div class="panel-card">
+        <div class="panel-card-title">✅ Trust Bar (4 items below hero)</div>
+        <div id="trust-editor"></div>
+        <button class="btn btn-outline-blue btn-sm" onclick="addTrustItem()" style="margin-top:8px">+ Add Item</button>
+      </div>
+      <button class="btn btn-red btn-full" style="margin-top:14px" onclick="saveAppearance()">💾 Save Appearance</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROMOTIONS ═══ -->
+<div class="tab-panel" id="tab-promotions">
+  <div class="pg-hd"><div><div class="pg-title">Promotions & Coupons</div><div class="pg-sub">Discount codes for WhatsApp orders</div></div><button class="btn btn-red" onclick="showAddCoupon()">+ New Coupon</button></div>
+  <div class="panel-card" id="coupon-form" style="display:none;max-width:480px;margin-bottom:16px">
+    <div class="panel-card-title">New Coupon Code</div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Code (e.g. EID20)</label><input type="text" id="cp-code" class="form-input" placeholder="EID20" style="text-transform:uppercase"/></div>
+      <div class="form-group"><label class="form-label">Discount %</label><input type="number" id="cp-disc" class="form-input" placeholder="20" min="1" max="100"/></div>
+      <div class="form-group"><label class="form-label">Expiry Date (optional)</label><input type="date" id="cp-exp" class="form-input"/></div>
+      <div class="form-group"><label class="form-label">Max Uses (0 = unlimited)</label><input type="number" id="cp-max" class="form-input" value="0"/></div>
+      <div class="form-group form-full"><label class="form-label">Description (internal note)</label><input type="text" id="cp-desc" class="form-input" placeholder="e.g. Eid special — 20% off all items"/></div>
+    </div>
+    <div style="display:flex;gap:8px"><button class="btn btn-red" onclick="saveCoupon()">Create Coupon</button><button class="btn btn-ghost" onclick="document.getElementById('coupon-form').style.display='none'">Cancel</button></div>
+  </div>
+  <div id="coupon-list"></div>
+</div>
+
+<!-- ═══ PRESETS ═══ -->
+<div class="tab-panel" id="tab-presets">
+  <div class="pg-hd"><div><div class="pg-title">Presets</div><div class="pg-sub">Fabric types · Size presets per category</div></div></div>
+  <div class="two-col">
+    <div class="panel-card">
+      <div class="panel-card-title">🧵 Fabric Presets</div>
+      <div class="preset-tags" id="fabric-tags"></div>
+      <div class="sz-add-row"><input type="text" id="fabric-inp" class="form-input" placeholder="Add fabric type..."/><button class="btn btn-blue btn-sm" onclick="addFabric()">Add</button></div>
+    </div>
+    <div class="panel-card">
+      <div class="panel-card-title">📏 Size Presets per Category</div>
+      <div id="size-preset-editor"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTACT INFO ═══ -->
+<div class="tab-panel" id="tab-contact">
+  <div class="pg-hd"><div><div class="pg-title">Contact & Business Info</div></div></div>
+  <div class="panel-card" style="max-width:560px">
+    <div class="form-group"><label class="form-label">Store Phone</label><input type="text" id="s-phone" class="form-input" placeholder="923001234567"/></div>
+    <div class="form-group"><label class="form-label">WhatsApp Number (may differ)</label><input type="text" id="s-wa" class="form-input" placeholder="923001234567"/></div>
+    <div class="form-group"><label class="form-label">Store Address</label><input type="text" id="s-addr" class="form-input"/></div>
+    <div class="form-group"><label class="form-label">Google Maps Link</label><input type="text" id="s-maps" class="form-input" placeholder="https://maps.google.com/?q=..."/></div>
+    <div class="form-group"><label class="form-label">Opening Hours</label><input type="text" id="s-hours" class="form-input"/></div>
+    <div class="panel-card-title" style="margin-top:8px">💳 Payment Numbers</div>
+    <div class="form-group"><label class="form-label">JazzCash Wallet Number</label><input type="text" id="s-jazz" class="form-input" placeholder="03xx-xxxxxxx"/></div>
+    <div class="form-group"><label class="form-label">EasyPaisa Number</label><input type="text" id="s-easy" class="form-input" placeholder="03xx-xxxxxxx"/></div>
+    <div class="form-group"><label class="form-label">Bank IBAN (shared on WhatsApp)</label><input type="text" id="s-iban" class="form-input" placeholder="PK36SCBL0000001123456702"/></div>
+    <button class="btn btn-red btn-lg" onclick="saveContact()">💾 Save Contact Info</button>
+  </div>
+</div>
+
+<!-- ═══ STAFF ═══ -->
+<div class="tab-panel" id="tab-staff">
+  <div class="pg-hd"><div><div class="pg-title">Staff Management</div><div class="pg-sub">Add staff, assign permissions & track activity</div></div><button class="btn btn-red" onclick="toggleStaffForm()">+ Add Staff</button></div>
+
+  <!-- ADD / EDIT FORM -->
+  <div class="panel-card" id="staff-form-wrap" style="display:none;max-width:560px;margin-bottom:16px">
+    <div class="panel-card-title" id="sf-form-title">New Staff Account</div>
+    <input type="hidden" id="sf-edit-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="sf-name" class="form-input" placeholder="e.g. Ahmed Khan"/></div>
+      <div class="form-group"><label class="form-label">Phone (optional)</label><input type="text" id="sf-phone" class="form-input" placeholder="+92 3xx xxxxxxx"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label">Username <span style="color:var(--red)">*</span></label>
+        <input type="text" id="sf-uname" class="form-input" placeholder="e.g. staff.ahmed"/>
+        <div class="form-hint">Used to log in. Cannot be changed later.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Staff ID (auto if blank)</label>
+        <input type="text" id="sf-sid" class="form-input" placeholder="e.g. STF-001"/>
+        <div class="form-hint">Unique ID shown on receipts & reports.</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" id="sf-pw-label">Password <span style="color:var(--red)">*</span></label>
+      <div class="pw-wrap"><input type="password" id="sf-pw" class="form-input" placeholder="Min 6 chars"/><button class="pw-eye" onclick="togglePw('sf-pw',this)">👁</button></div>
+      <div class="form-hint" id="sf-pw-hint">Leave blank to keep current password (when editing).</div>
+    </div>
+
+    <!-- PERMISSIONS -->
+    <div class="panel-card-title" style="margin-top:4px;margin-bottom:10px">🔐 Permissions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px" id="sf-perms-grid">
+      <label class="sf-perm-row"><input type="checkbox" id="sp-products" checked/> <span>Manage Products</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-orders" checked/> <span>Manage Orders</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-customers"/> <span>View Customers</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-analytics"/> <span>View Analytics</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-coupons"/> <span>Manage Coupons</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-categories"/> <span>Manage Categories</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-homepage"/> <span>Edit Homepage</span></label>
+      <label class="sf-perm-row"><input type="checkbox" id="sp-appearance"/> <span>Edit Appearance</span></label>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-red" onclick="saveStaff()">💾 Save Staff</button>
+      <button class="btn btn-ghost" onclick="closeStaffForm()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- STAFF CARDS -->
+  <div id="staff-list"></div>
+
+  <!-- STAFF DETAIL MODAL -->
+  <div class="modal-bg" id="staff-modal-bg" onclick="if(event.target===this)closeStaffModal()">
+    <div class="modal-box" style="max-width:540px">
+      <button class="modal-close" onclick="closeStaffModal()">×</button>
+      <div id="staff-modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CUSTOMERS ═══ -->
+<div class="tab-panel" id="tab-customers">
+  <div class="pg-hd"><div><div class="pg-title">Customers</div><div class="pg-sub" id="cust-sub"></div></div><button class="btn btn-outline-blue btn-sm" onclick="exportCustomers()">⬇ Export CSV</button></div>
+  <div class="tbl-wrap"><table class="tbl"><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Orders</th><th>Joined</th></tr></thead><tbody id="cust-tbody"></tbody></table></div>
+</div>
+
+<!-- ═══ ANALYTICS ═══ -->
+<div class="tab-panel" id="tab-analytics">
+  <div class="pg-hd"><div><div class="pg-title">Analytics</div><div class="pg-sub">Product views · Category performance · Sales breakdown</div></div></div>
+  <div class="two-col">
+    <div class="panel-card"><div class="panel-card-title">👁 Most Viewed Products</div><div class="bar-chart" id="views-chart"></div></div>
+    <div class="panel-card"><div class="panel-card-title">📦 Products Per Category</div><div class="bar-chart" id="cat-count-chart"></div></div>
+  </div>
+  <div class="two-col" style="margin-top:16px">
+    <div class="panel-card"><div class="panel-card-title">📊 Sale vs Regular</div><div id="sale-ratio-chart"></div></div>
+    <div class="panel-card"><div class="panel-card-title">🏷 Badge Distribution</div><div class="bar-chart" id="badge-chart"></div></div>
+  </div>
+</div>
+
+<!-- ═══ REPORTS ═══ -->
+<div class="tab-panel" id="tab-reports">
+  <div class="pg-hd"><div><div class="pg-title">Reports</div><div class="pg-sub">Stock value · Order summary · Category performance</div></div><button class="btn btn-outline-blue btn-sm" onclick="exportReport()">⬇ Export Report</button></div>
+  <div class="three-col" id="report-stats"></div>
+  <div class="two-col" style="margin-top:16px">
+    <div class="panel-card"><div class="panel-card-title">📦 Stock Value by Category</div><div id="stock-val-report"></div></div>
+    <div class="panel-card"><div class="panel-card-title">📋 Order Status Summary</div><div id="order-status-report"></div></div>
+  </div>
+</div>
+
+<!-- ═══ MY ACCOUNT ═══ -->
+<div class="tab-panel" id="tab-my-account">
+  <div class="pg-hd"><div><div class="pg-title">My Account</div><div class="pg-sub">Change username, password & display name</div></div></div>
+  <div class="two-col">
+    <div>
+      <div class="panel-card acc-form">
+        <div class="panel-card-title">👤 Admin Credentials</div>
+        <div class="panel-card" style="background:rgba(200,16,46,.05);border-color:rgba(200,16,46,.2);padding:12px;margin-bottom:16px;font-size:12px;color:var(--red)">⚠️ Changing credentials will log you out. Use new credentials to log back in.</div>
+        <div class="form-group"><label class="form-label">Display Name</label><input type="text" id="adm-name" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Username</label><input type="text" id="adm-uname" class="form-input"/></div>
+        <div class="form-group"><label class="form-label">Email (optional)</label><input type="email" id="adm-email" class="form-input" placeholder="your@email.com"/></div>
+        <hr class="divider"/>
+        <div class="form-group"><label class="form-label">Current Password (required to save changes)</label><div class="pw-wrap"><input type="password" id="adm-cur-pw" class="form-input" placeholder="Enter current password"/><button class="pw-eye" onclick="togglePw('adm-cur-pw',this)">👁</button></div><div class="form-error" id="adm-cur-pw-err"></div></div>
+        <div class="form-group"><label class="form-label">New Password (leave blank to keep current)</label><div class="pw-wrap"><input type="password" id="adm-new-pw" class="form-input" placeholder="New password (min 6 chars)"/><button class="pw-eye" onclick="togglePw('adm-new-pw',this)">👁</button></div></div>
+        <div class="form-group"><label class="form-label">Confirm New Password</label><div class="pw-wrap"><input type="password" id="adm-new-pw2" class="form-input" placeholder="Repeat new password"/><button class="pw-eye" onclick="togglePw('adm-new-pw2',this)">👁</button></div><div class="form-error" id="adm-pw2-err"></div></div>
+        <button class="btn btn-red btn-lg" onclick="saveAdminAccount()">💾 Save Changes & Re-Login</button>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="panel-card-title">🕐 Login History (last 10)</div>
+      <div id="login-history-full"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div class="tab-panel" id="tab-settings">
+  <div class="pg-hd"><div><div class="pg-title">Settings</div><div class="pg-sub">Security, thresholds & data management</div></div></div>
+  <div class="panel-card" style="max-width:520px">
+    <div class="panel-card-title">🔒 Security</div>
+    <div class="form-group"><label class="form-label">Auto-logout after inactivity (minutes)</label><input type="number" id="s-autologout" class="form-input" min="0" max="480"/><div class="form-hint">Set 0 to disable. Recommended: 60 mins.</div></div>
+    <div class="form-group"><label class="form-label">Low Stock Alert Threshold (units)</label><input type="number" id="s-threshold" class="form-input" min="1"/><div class="form-hint">Products at or below this number trigger dashboard alerts.</div></div>
+    <hr class="divider"/>
+    <div class="panel-card-title">🗂 Data Management</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-outline-blue btn-sm" onclick="exportAllData()">⬇ Export Full Backup</button>
+      <button class="btn btn-sm" style="background:#ffeeba;color:#856404" onclick="resetToDefaults()">↩ Reset Products to Default</button>
+    </div>
+    <div class="form-hint" style="margin-top:8px">Export includes all products, orders, customers, categories, coupons, settings, presets and login history.</div>
+    <button class="btn btn-red btn-lg" style="margin-top:16px" onclick="saveSettings()">💾 Save Settings</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ADD ORDER MODAL -->
+<div class="modal-bg" id="add-order-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box" style="max-width:500px;width:100%;padding:28px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div style="font-family:var(--ff-head);font-size:18px;font-weight:800">Log Manual Order</div>
+      <button class="modal-close" onclick="document.getElementById('add-order-modal').classList.remove('open')">×</button>
+    </div>
+    <div class="form-group"><label class="form-label">Customer Name</label><input type="text" id="mo-name" class="form-input" placeholder="e.g. Ahmed Khan"/></div>
+    <div class="form-group"><label class="form-label">Phone / WhatsApp</label><input type="text" id="mo-phone" class="form-input" placeholder="03xx-xxxxxxx"/></div>
+    <div class="form-group"><label class="form-label">Order Details (free text)</label><textarea id="mo-items" class="form-input" rows="3" placeholder="e.g. Lawn Printed 3-Piece, Size M × 1 = Rs. 3,200"></textarea></div>
+    <div class="form-group"><label class="form-label">Total Amount (PKR)</label><input type="number" id="mo-total" class="form-input" placeholder="3200"/></div>
+    <div class="form-group"><label class="form-label">Payment Method</label><select id="mo-pay" class="form-input form-select"><option>COD</option><option>JazzCash</option><option>EasyPaisa</option><option>Bank Transfer</option></select></div>
+    <div class="form-group"><label class="form-label">Initial Status</label><select id="mo-status" class="form-input form-select"><option value="pending">Pending</option><option value="confirmed">Confirmed</option></select></div>
+    <button class="btn btn-red btn-full btn-lg" onclick="logManualOrder()">Save Order</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script>
+/* ── AUTH ── */
+if(!Session.isLoggedIn()||(!Session.isAdmin()&&!Session.isStaff())) location.href='login.html';
+const role=Session.getRole(), user=Session.getUser(), isAdmin=Session.isAdmin();
+
+if(isAdmin){
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display='');
+  document.getElementById('sb-role-pill').textContent='Admin';
+  document.getElementById('sb-av').textContent=(user?.name||MASTER_ADMIN.name||'U').charAt(0).toUpperCase();
+  document.getElementById('sb-uname').innerHTML=`${user?.name||MASTER_ADMIN.name||'Usman'}<small>Master Admin</small>`;
+} else {
+  document.getElementById('sb-role-pill').textContent='Staff';
+  document.getElementById('sb-av').textContent=(user?.name||'S').charAt(0).toUpperCase();
+  document.getElementById('sb-uname').innerHTML=`${user?.name||'Staff'}<small>Staff Member</small>`;
+  // Show only permitted sidebar links for staff
+  const perms=user?.permissions||{};
+  const permMap={'homepage':'sp-homepage','categories':'sp-categories','appearance':'sp-appearance','promotions':'sp-coupons','staff':'','customers':'sp-customers','analytics':'sp-analytics','reports':'sp-analytics'};
+  document.querySelectorAll('.admin-only').forEach(el=>{
+    // Show section headers and buttons based on permissions
+    if(el.tagName==='DIV') return; // skip section headers for staff
+    const onclickAttr=el.getAttribute('onclick')||'';
+    const match=onclickAttr.match(/go\('([^']+)'/);
+    if(!match) return;
+    const tabName=match[1];
+    const permKey=permMap[tabName];
+    if(permKey===undefined) return; // hidden from staff always (staff tab itself)
+    if(!permKey||perms[permKey]) el.style.display='';
+  });
+}
+document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+/* ── NAV ── */
+function go(name, btn){
+  // Permission guard for staff
+  if(!isAdmin){
+    const perms=user?.permissions||{};
+    const staffAllowed={products:true,'add-product':true,orders:true,customers:'sp-customers',analytics:'sp-analytics',homepage:'sp-homepage',categories:'sp-categories',appearance:'sp-appearance',promotions:'sp-coupons'};
+    const pkey=staffAllowed[name];
+    if(pkey===undefined){showToast('You do not have permission to access this section.','error');return;}
+    if(pkey!==true&&!perms[pkey]){showToast('You do not have permission to access this section.','error');return;}
+  }
+  document.querySelectorAll('.tab-panel').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(btn) btn.classList.add('active');
+  const map={dashboard:renderDashboard,products:renderProducts,'add-product':initAddProd,orders:renderOrders,homepage:loadHomepage,categories:renderCats,appearance:loadAppearance,promotions:renderCoupons,presets:renderPresets,contact:loadContact,staff:renderStaff,customers:renderCustomers,analytics:renderAnalytics,reports:renderReports,'my-account':loadMyAccount,settings:loadSettings};
+  if(map[name]) map[name]();
+}
+function logout(){ Session.logout(); location.href='login.html'; }
+
+/* ════ DASHBOARD ════ */
+function renderDashboard(){
+  const prods=Products.getAll(), custs=Users.getAll().filter(u=>u.role===ROLES.CUSTOMER), ords=Orders.getAll();
+  const s=SiteSettings.get(), thr=s.lowStockThreshold||5;
+  const low=prods.filter(p=>(p.stock||0)<=thr), totalVal=prods.reduce((s,p)=>s+p.price*(p.stock||0),0);
+  const pending=ords.filter(o=>o.status==='pending');
+  document.getElementById('sb-pending-ct').textContent=pending.length||'';
+  document.getElementById('sb-pending-ct').style.display=pending.length?'':'none';
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat"><div class="stat-icon">📦</div><div class="stat-val">${prods.filter(p=>p.visible!==false).length}</div><div class="stat-lbl">Active Products</div></div>
+    <div class="stat red"><div class="stat-icon">⚠️</div><div class="stat-val" style="color:var(--red)">${low.length}</div><div class="stat-lbl">Low / Out of Stock</div></div>
+    <div class="stat orange"><div class="stat-icon">📋</div><div class="stat-val" style="color:#ff6b00">${pending.length}</div><div class="stat-lbl">Pending Orders</div></div>
+    <div class="stat green"><div class="stat-icon">💰</div><div class="stat-val" style="font-size:18px;color:var(--green)">${fmtPrice(totalVal)}</div><div class="stat-lbl">Total Inventory Value</div></div>`;
+  document.getElementById('low-stock-list').innerHTML=low.length
+    ?low.slice(0,6).map(p=>`<div class="report-row"><div><div style="font-weight:700;font-size:13px">${p.name}</div><div style="font-size:11px;color:var(--ink-3)">${getCatLabel(p.cat)}</div></div><span class="${p.stock<=0?'stock-out':'stock-low'}">${p.stock<=0?'Out of Stock':p.stock+' left'}</span></div>`).join('')
+    :'<div style="color:var(--green);font-weight:600;font-size:13px;padding:10px 0">✓ All items well stocked</div>';
+  document.getElementById('recent-orders').innerHTML=!ords.length?'<div style="color:var(--ink-3);font-size:13px;padding:10px 0">No orders yet.</div>':
+    ords.slice(0,4).map(o=>`<div class="report-row"><div><div style="font-weight:700;font-size:12px">${o.id}</div><div style="font-size:11px;color:var(--ink-3)">${o.customerName||'Customer'} · ${fmtDateTime(o.createdAt)}</div></div><span class="status status-${o.status}">${o.status}</span></div>`).join('');
+  const cats={}; Categories.getAll().forEach(c=>cats[c.id]=0); prods.forEach(p=>{if(cats[p.cat]!==undefined)cats[p.cat]++});
+  const maxC=Math.max(...Object.values(cats),1);
+  document.getElementById('cat-bars').innerHTML=Object.entries(cats).map(([k,v])=>`<div class="bar-row"><div class="bar-lbl">${getCatLabel(k)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/maxC*100)}%"></div></div><div class="bar-val">${v}</div></div>`).join('');
+  const hist=LoginHistory.get().slice(0,4);
+  document.getElementById('login-hist-preview').innerHTML=!hist.length?'<div style="color:var(--ink-3);font-size:13px">No login history yet.</div>':
+    hist.map(h=>`<div class="login-hist-row"><span style="font-weight:600">${h.username} <span class="badge badge-${h.role==='admin'?'sale':'new'}" style="vertical-align:middle">${h.role}</span></span><span style="color:var(--ink-3)">${fmtDateTime(h.time)}</span></div>`).join('');
+}
+
+/* ════ PRODUCTS ════ */
+let selectedProds=new Set(), prodImgData='', editSizes=[];
+
+function renderProducts(){
+  const q=(document.getElementById('prod-q')?.value||'').toLowerCase();
+  const catF=document.getElementById('prod-cat-f')?.value||'';
+  const visF=document.getElementById('prod-vis-f')?.value||'';
+  const sort=document.getElementById('prod-sort')?.value||'default';
+  // populate cat filter
+  const catSel=document.getElementById('prod-cat-f'); const cur=catSel.value;
+  catSel.innerHTML='<option value="">All Categories</option>'+Categories.getAll().map(c=>`<option value="${c.id}">${c.label}</option>`).join('');
+  catSel.value=cur;
+  let l=Products.getAll();
+  if(catF)l=l.filter(p=>p.cat===catF);
+  if(visF==='visible')l=l.filter(p=>p.visible!==false);
+  if(visF==='hidden')l=l.filter(p=>p.visible===false);
+  if(q)l=l.filter(p=>p.name.toLowerCase().includes(q)||p.fabric.toLowerCase().includes(q));
+  if(sort==='price-asc')l.sort((a,b)=>a.price-b.price);
+  if(sort==='price-desc')l.sort((a,b)=>b.price-a.price);
+  if(sort==='stock-asc')l.sort((a,b)=>(a.stock||0)-(b.stock||0));
+  if(sort==='views')l.sort((a,b)=>(b.views||0)-(a.views||0));
+  l.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+  document.getElementById('prod-sub').textContent=l.length+' products';
+  const s=SiteSettings.get(), thr=s.lowStockThreshold||5;
+  document.getElementById('prod-tbody').innerHTML=l.length?l.map(p=>{
+    const st=p.stock||0; const sc=st<=0?'stock-out':st<=thr?'stock-low':'stock-ok'; const sv=st<=0?'Out':st<=thr?st+' ⚠':st;
+    return `<tr>
+      <td><input type="checkbox" class="prod-chk" value="${p.id}" ${selectedProds.has(String(p.id))?'checked':''} onchange="toggleProdChk(this)"/></td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div style="width:40px;height:40px;border-radius:7px;background:${getCatGrad(p.cat)};position:relative;overflow:hidden;flex-shrink:0">${p.img?`<img src="${p.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"/>`:''}${p.pinned?'<span style="position:absolute;top:2px;right:2px;font-size:9px">📌</span>':''}</div><div><div style="font-weight:700;font-size:13px">${p.name}</div><div style="font-size:11px;color:var(--ink-3)">${p.fabric}</div></div></div></td>
+      <td><span class="badge badge-new" style="font-size:10px">${getCatLabel(p.cat)}</span></td>
+      <td>${priceBadge(p)}</td>
+      <td><span class="${sc}">${sv}</span></td>
+      <td><label class="tog blue"><input type="checkbox" ${p.visible!==false?'checked':''} onchange="Products.update(${p.id},{visible:this.checked});showToast(this.checked?'Visible':'Hidden');renderProducts()"/><span class="tog-sl"></span></label></td>
+      <td><label class="tog"><input type="checkbox" ${p.oldPrice?'checked':''} onchange="toggleSale(${p.id},this.checked)"/><span class="tog-sl"></span></label></td>
+      <td><label class="tog blue"><input type="checkbox" ${p.pinned?'checked':''} onchange="Products.update(${p.id},{pinned:this.checked});showToast(p.pinned?'Unpinned':'Pinned');renderProducts()"/><span class="tog-sl"></span></label></td>
+      <td><div class="tbl-acts">
+        <button class="tbl-btn tb-edit" onclick="editProd(${p.id})">Edit</button>
+        <button class="tbl-btn tb-dup" onclick="dupProd(${p.id})">Copy</button>
+        <button class="tbl-btn tb-del" onclick="delProd(${p.id},'${p.name.replace(/'/g,"\\'")}')">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join(''):'<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--ink-3)">No products found.</td></tr>';
+}
+
+function toggleSale(id,on){
+  if(on){const op=prompt('Enter original (higher) price:');if(!op||isNaN(op)){renderProducts();return}Products.update(id,{oldPrice:Number(op),badge:'sale'});showToast('Sale on!','success');}
+  else{Products.update(id,{oldPrice:undefined,badge:'new'});showToast('Sale off.');}
+  renderProducts();
+}
+function dupProd(id){Products.duplicate(id);showToast('Product duplicated!','success');renderProducts();}
+function delProd(id,name){if(!confirm('Delete "'+name+'"?'))return;Products.delete(id);showToast('Deleted.','success');renderProducts();}
+
+// Bulk
+function toggleProdChk(chk){ if(chk.checked)selectedProds.add(chk.value); else selectedProds.delete(chk.value); updateBulkBar(); }
+function toggleAllChk(chk){ document.querySelectorAll('.prod-chk').forEach(c=>{c.checked=chk.checked;chk.checked?selectedProds.add(c.value):selectedProds.delete(c.value);}); updateBulkBar(); }
+function updateBulkBar(){ const n=selectedProds.size; document.getElementById('bulk-bar').classList.toggle('show',n>0); document.getElementById('bulk-ct').textContent=n+' selected'; }
+function clearBulk(){ selectedProds.clear(); document.querySelectorAll('.prod-chk').forEach(c=>c.checked=false); document.getElementById('chk-all').checked=false; updateBulkBar(); }
+function bulkAction(action){
+  if(!selectedProds.size)return;
+  if(action==='delete'&&!confirm('Delete '+selectedProds.size+' products?'))return;
+  let disc=0;
+  if(action==='sale'){disc=prompt('Enter original price multiplier % (e.g. 120 means original was 20% more):');if(!disc)return;disc=Number(disc);}
+  selectedProds.forEach(id=>{
+    if(action==='sale'){const p=Products.getById(id);if(p)Products.update(id,{oldPrice:Math.round(p.price*(disc/100)),badge:'sale'});}
+    else if(action==='hide')Products.update(id,{visible:false});
+    else if(action==='show')Products.update(id,{visible:true});
+    else if(action==='delete')Products.delete(id);
+  });
+  showToast('Bulk action done!','success'); clearBulk(); renderProducts();
+}
+
+function exportCSV(){
+  const prods=Products.getAll();
+  const rows=[['ID','Name','Category','Fabric','Price','Old Price','Stock','Badge','Visible','Views'],...prods.map(p=>[p.id,p.name,getCatLabel(p.cat),p.fabric,p.price,p.oldPrice||'',p.stock||0,p.badge,p.visible!==false?'Yes':'No',p.views||0])];
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='ayaan_products.csv';a.click();
+  showToast('CSV exported!','success');
+}
+
+/* ════ ADD / EDIT PRODUCT ════ */
+function initAddProd(){
+  const catSel=document.getElementById('p-cat');
+  catSel.innerHTML=Categories.getAll().map(c=>`<option value="${c.id}">${c.label}</option>`).join('');
+  const dl=document.getElementById('fabric-list');
+  dl.innerHTML=FabricPresets.get().map(f=>`<option value="${f}"/>`).join('');
+}
+function loadSizePreset(){
+  const cat=document.getElementById('p-cat')?.value;
+  const presets=SizePresets.get();
+  if(presets[cat]){editSizes=[...presets[cat]];renderSzTags();showToast('Sizes loaded for '+getCatLabel(cat));}
+}
+function handleImg(inp){
+  const f=inp.files[0];if(!f)return;
+  if(f.size>5*1024*1024){showToast('Image too large. Max 5MB.','error');return}
+  const r=new FileReader();r.onload=e=>{
+    const dataUrl=e.target.result;
+    const check=ImageGuard.validate(dataUrl);
+    if(!check.ok){showToast(check.msg,'error');return;}
+    prodImgData=dataUrl;
+    document.getElementById('img-prev-el').src=prodImgData;
+    document.getElementById('img-prev-el').style.display='block';
+    document.getElementById('img-ph').style.display='none';
+    ImageGuard.warnStorage();
+  };r.readAsDataURL(f);
+}
+const dz=document.getElementById('img-zone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f?.type.startsWith('image/')){const dt=new DataTransfer();dt.items.add(f);document.getElementById('img-file').files=dt.files;handleImg(document.getElementById('img-file'));}});
+function addSz(){const v=document.getElementById('sz-inp').value.trim();if(!v)return;v.split(',').forEach(s=>{const t=s.trim();if(t&&!editSizes.includes(t))editSizes.push(t);});document.getElementById('sz-inp').value='';renderSzTags();}
+function rmSz(s){editSizes=editSizes.filter(x=>x!==s);renderSzTags();}
+function renderSzTags(){document.getElementById('sz-tags').innerHTML=editSizes.map(s=>`<div class="sz-tag">${s}<button onclick="rmSz('${s}')">×</button></div>`).join('');}
+document.getElementById('sz-inp').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addSz();}});
+function editProd(id){
+  const p=Products.getById(id);if(!p)return;
+  initAddProd();
+  document.getElementById('edit-id').value=p.id;
+  document.getElementById('p-name').value=p.name;
+  document.getElementById('p-cat').value=p.cat;
+  document.getElementById('p-price').value=p.price;
+  document.getElementById('p-old').value=p.oldPrice||'';
+  document.getElementById('p-fabric').value=p.fabric;
+  document.getElementById('p-stock').value=p.stock||0;
+  document.getElementById('p-badge').value=p.badge||'new';
+  document.getElementById('p-desc').value=p.desc||'';
+  document.getElementById('p-visible').checked=p.visible!==false;
+  document.getElementById('p-pinned').checked=!!p.pinned;
+  editSizes=Array.isArray(p.sizes)?[...p.sizes]:(p.sizes||'').split(',').map(s=>s.trim()).filter(Boolean);
+  prodImgData=p.img||'';
+  if(prodImgData){document.getElementById('img-prev-el').src=prodImgData;document.getElementById('img-prev-el').style.display='block';document.getElementById('img-ph').style.display='none';}
+  renderSzTags();
+  document.getElementById('add-prod-title').textContent='Edit Product';
+  go('add-product',null); window.scrollTo(0,0);
+}
+function saveProd(){
+  const name=document.getElementById('p-name').value.trim(), price=Number(document.getElementById('p-price').value), fabric=document.getElementById('p-fabric').value.trim();
+  let ok=true;
+  ['p-name-err','p-price-err','p-fabric-err'].forEach(id=>{document.getElementById(id).textContent='';document.getElementById(id.replace('-err','')).classList.remove('error')});
+  if(!name){document.getElementById('p-name-err').textContent='Required.';document.getElementById('p-name').classList.add('error');ok=false;}
+  if(!price){document.getElementById('p-price-err').textContent='Required.';document.getElementById('p-price').classList.add('error');ok=false;}
+  if(!fabric){document.getElementById('p-fabric-err').textContent='Required.';document.getElementById('p-fabric').classList.add('error');ok=false;}
+  if(!ok)return;
+  const old=document.getElementById('p-old').value;
+  const data={name,cat:document.getElementById('p-cat').value,price,oldPrice:old?Number(old):undefined,fabric,stock:Number(document.getElementById('p-stock').value)||0,badge:document.getElementById('p-badge').value,sizes:[...editSizes],desc:document.getElementById('p-desc').value.trim(),img:prodImgData,visible:document.getElementById('p-visible').checked,pinned:document.getElementById('p-pinned').checked};
+  const eid=document.getElementById('edit-id').value;
+  if(eid){Products.update(Number(eid),data);showToast('Product updated!','success');}
+  else{Products.add(data);showToast('Product added!','success');}
+  resetProdForm(); go('products',null);
+}
+function resetProdForm(){document.getElementById('edit-id').value='';['p-name','p-price','p-old','p-fabric','p-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('p-stock').value=10;document.getElementById('p-visible').checked=true;document.getElementById('p-pinned').checked=false;editSizes=[];renderSzTags();prodImgData='';document.getElementById('img-prev-el').style.display='none';document.getElementById('img-ph').style.display='block';document.getElementById('add-prod-title').textContent='Add New Product';}
+
+/* ════ ORDERS ════ */
+function renderOrders(){
+  const sf=document.getElementById('ord-status-f')?.value||'';
+  let ords=Orders.getAll().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  if(sf)ords=ords.filter(o=>o.status===sf);
+  document.getElementById('orders-list').innerHTML=!ords.length?'<div class="panel-card" style="text-align:center;padding:48px;color:var(--ink-3)">No orders yet.</div>':
+    ords.map(o=>`<div class="inq-card">
+      <div class="inq-hd">
+        <div><div style="font-family:var(--ff-head);font-weight:700;color:var(--blue);font-size:13px">${o.id}</div><div style="font-size:11px;color:var(--ink-3)">${fmtDateTime(o.createdAt)} · ${o.customerName||'Unknown'} ${o.customerPhone?'· '+o.customerPhone:''} · ${o.payMethod||''}</div></div>
+        <span class="status status-${o.status}">${o.status.charAt(0).toUpperCase()+o.status.slice(1)}</span>
+      </div>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.8;margin-bottom:10px;white-space:pre-line">${o.itemsText||''}</div>
+      ${o.note?`<div style="background:var(--blue-lt);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--blue);margin-bottom:8px">📝 ${o.note}</div>`:''}
+      <input class="note-input" id="note-${o.id}" placeholder="Add staff note..." value="${o.note||''}"/>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px">
+        <span style="font-family:var(--ff-head);font-weight:800">${fmtPrice(o.total||0)}</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <a href="${waLink('Assalam o Alaikum! Regarding order '+o.id+': ')}" target="_blank" class="tbl-btn tb-ok">WhatsApp</a>
+          <button class="tbl-btn tb-ok" onclick="updOrd('${o.id}','confirmed')">Confirm</button>
+          <button class="tbl-btn tb-edit" onclick="updOrd('${o.id}','delivered')">Delivered</button>
+          <button class="tbl-btn" style="background:var(--bg)" onclick="updOrd('${o.id}','pending')">Pending</button>
+          <button class="tbl-btn tb-del" onclick="delOrd('${o.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function updOrd(id,status){const note=document.getElementById('note-'+id)?.value||'';Orders.update(id,{status,note});showToast('Status: '+status,'success');renderOrders();}
+function delOrd(id){if(!confirm('Delete this order?'))return;Orders.save(Orders.getAll().filter(o=>o.id!==id));showToast('Deleted.');renderOrders();}
+function showAddOrderModal(){ document.getElementById('add-order-modal').classList.add('open'); }
+function logManualOrder(){
+  const name=document.getElementById('mo-name').value.trim();
+  const phone=document.getElementById('mo-phone').value.trim();
+  const items=document.getElementById('mo-items').value.trim();
+  const total=Number(document.getElementById('mo-total').value)||0;
+  if(!name||!items){showToast('Name and order details required.','error');return;}
+  Orders.add({customerName:name,customerPhone:phone,itemsText:items,total,payMethod:document.getElementById('mo-pay').value,status:document.getElementById('mo-status').value,userId:null});
+  showToast('Order logged!','success');
+  document.getElementById('add-order-modal').classList.remove('open');
+  ['mo-name','mo-phone','mo-items','mo-total'].forEach(id=>document.getElementById(id).value='');
+  renderOrders();
+}
+
+/* ════ HOMEPAGE ════ */
+function loadHomepage(){
+  const s=SiteSettings.get();
+  document.getElementById('s-announce').value=s.announceText||'';
+  document.getElementById('s-announce-bg').value=s.announceBg||'#003087';
+  document.getElementById('s-announce-bg-txt').value=s.announceBg||'#003087';
+  document.getElementById('s-hero-h').value=s.heroHeading||'';
+  document.getElementById('s-hero-sub').value=s.heroSub||'';
+  document.getElementById('s-badge').value=s.heroBadge||'';
+  document.getElementById('s-badge-on').checked=s.heroBadgeOn!==false;
+  document.getElementById('s-hero-bg').value=s.heroBgColor||'#003087';
+  document.getElementById('s-hero-bg-txt').value=s.heroBgColor||'#003087';
+  document.getElementById('s-global-sale').value=s.globalSaleBadge||'';
+  document.getElementById('s-global-sale-on').checked=!!s.globalSaleOn;
+  // Featured picker
+  const prods=Products.getAll(), feat=s.featuredProductIds||[];
+  document.getElementById('featured-picker').innerHTML=prods.map(p=>`<label style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer"><input type="checkbox" value="${p.id}" ${feat.includes(p.id)||feat.includes(String(p.id))?'checked':''}/><span style="font-size:13px">${p.name}</span></label>`).join('');
+}
+function saveHomepage(){
+  const feat=[...document.querySelectorAll('#featured-picker input:checked')].map(c=>Number(c.value));
+  SiteSettings.save({announceText:document.getElementById('s-announce').value,announceBg:document.getElementById('s-announce-bg').value,heroHeading:document.getElementById('s-hero-h').value,heroSub:document.getElementById('s-hero-sub').value,heroBadge:document.getElementById('s-badge').value,heroBadgeOn:document.getElementById('s-badge-on').checked,heroBgColor:document.getElementById('s-hero-bg').value,globalSaleBadge:document.getElementById('s-global-sale').value,globalSaleOn:document.getElementById('s-global-sale-on').checked,featuredProductIds:feat});
+  showToast('Homepage saved!','success');
+}
+
+/* ════ CATEGORIES ════ */
+function renderCats(){
+  const cats=Categories.getAll().sort((a,b)=>a.order-b.order);
+  const prods=Products.getAll();
+  document.getElementById('cat-list').innerHTML=cats.map(c=>`<div class="cat-mgr-card" id="catcard-${c.id}">
+    <div class="cat-icon-preview">${c.icon||'📦'}</div>
+    <div class="cat-mgr-info"><div class="cat-mgr-name">${c.label}</div><div class="cat-mgr-desc">${c.desc||''}</div></div>
+    <span class="cat-prod-count">${prods.filter(p=>p.cat===c.id).length} products</span>
+    <label class="tog blue" title="Visible in store"><input type="checkbox" ${c.visible?'checked':''} onchange="Categories.update('${c.id}',{visible:this.checked});renderCats();showToast(this.checked?'Category visible':'Category hidden')"/><span class="tog-sl"></span></label>
+    <div class="tbl-acts">
+      <button class="tbl-btn tb-edit" onclick="editCat('${c.id}')">Edit</button>
+      <button class="tbl-btn tb-del" onclick="deleteCat('${c.id}','${c.label}')">Delete</button>
+    </div>
+  </div>`).join('');
+}
+function showAddCat(){document.getElementById('add-cat-form').style.display='block';document.getElementById('cat-edit-id').value='';document.getElementById('cat-label').value='';document.getElementById('cat-icon').value='';document.getElementById('cat-desc').value='';document.getElementById('cat-form-title').textContent='Add New Category';}
+function editCat(id){const c=Categories.getById(id);if(!c)return;document.getElementById('add-cat-form').style.display='block';document.getElementById('cat-edit-id').value=c.id;document.getElementById('cat-label').value=c.label;document.getElementById('cat-icon').value=c.icon||'';document.getElementById('cat-desc').value=c.desc||'';document.getElementById('cat-form-title').textContent='Edit Category';}
+function saveCat(){
+  const label=document.getElementById('cat-label').value.trim(), icon=document.getElementById('cat-icon').value.trim(), desc=document.getElementById('cat-desc').value.trim();
+  if(!label){showToast('Label required.','error');return;}
+  const eid=document.getElementById('cat-edit-id').value;
+  if(eid){Categories.update(eid,{label,icon,desc});showToast('Category updated!','success');}
+  else{Categories.add({label,icon,desc});showToast('Category added!','success');}
+  document.getElementById('add-cat-form').style.display='none'; renderCats();
+}
+function deleteCat(id,name){
+  const cnt=Products.getAll().filter(p=>p.cat===id).length;
+  if(!confirm(`Delete category "${name}"? It has ${cnt} product(s). Products will NOT be deleted but their category will become unknown.`))return;
+  Categories.delete(id); showToast('Category deleted.'); renderCats();
+}
+
+/* ════ APPEARANCE ════ */
+function loadAppearance(){
+  const s=SiteSettings.get();
+  document.getElementById('s-name').value=s.storeName||'';
+  document.getElementById('s-tagline').value=s.tagline||'';
+  document.getElementById('s-logo-text').value=s.logoText||'';
+  document.getElementById('s-logo-img').value=s.logoImg||'';
+  document.getElementById('s-red').value=s.accentRed||'#C8102E';
+  document.getElementById('s-red-txt').value=s.accentRed||'#C8102E';
+  document.getElementById('s-blue').value=s.accentBlue||'#003087';
+  document.getElementById('s-blue-txt').value=s.accentBlue||'#003087';
+  // Trust bar
+  const items=s.trustItems||[];
+  document.getElementById('trust-editor').innerHTML=items.map((t,i)=>`<div class="trust-editor-row" id="trust-row-${i}">
+    <input value="${t.icon||''}" placeholder="Icon" style="width:60px;text-align:center" onchange="updateTrust()"/>
+    <input value="${t.title||''}" placeholder="Title" onchange="updateTrust()"/>
+    <input value="${t.desc||''}" placeholder="Description" onchange="updateTrust()"/>
+    <button class="tbl-btn tb-del" onclick="removeTrustItem(${i})">✕</button>
+  </div>`).join('');
+}
+function updateTrust(){}
+function addTrustItem(){const ed=document.getElementById('trust-editor');const i=ed.children.length;ed.innerHTML+=`<div class="trust-editor-row" id="trust-row-${i}"><input value="⭐" placeholder="Icon" style="width:60px;text-align:center"/><input value="" placeholder="Title"/><input value="" placeholder="Description"/><button class="tbl-btn tb-del" onclick="removeTrustItem(${i})">✕</button></div>`;}
+function removeTrustItem(i){document.getElementById('trust-row-'+i)?.remove();}
+function getTrustItems(){return [...document.querySelectorAll('#trust-editor .trust-editor-row')].map(row=>{const inputs=row.querySelectorAll('input');return{icon:inputs[0]?.value,title:inputs[1]?.value,desc:inputs[2]?.value};}).filter(t=>t.title);}
+function saveAppearance(){
+  SiteSettings.save({storeName:document.getElementById('s-name').value,tagline:document.getElementById('s-tagline').value,logoText:document.getElementById('s-logo-text').value,logoImg:document.getElementById('s-logo-img').value,accentRed:document.getElementById('s-red').value,accentBlue:document.getElementById('s-blue').value,trustItems:getTrustItems()});
+  showToast('Appearance saved!','success');
+}
+
+/* ════ PROMOTIONS ════ */
+function renderCoupons(){
+  const all=Coupons.getAll();
+  document.getElementById('coupon-list').innerHTML=!all.length?'<div class="panel-card" style="text-align:center;padding:40px;color:var(--ink-3)">No coupons yet. Add one above.</div>':
+    all.map(c=>`<div class="coupon-card">
+      <div class="coupon-code">${c.code}</div>
+      <div class="coupon-info"><div class="coupon-disc">${c.discount}% OFF</div><div class="coupon-exp">${c.expiry?'Expires: '+fmtDate(c.expiry):'No expiry'} · Max uses: ${c.maxUses||'Unlimited'}</div><div class="coupon-uses">Used ${c.uses||0} times · ${c.description||''}</div></div>
+      <label class="tog green" title="Active/Inactive"><input type="checkbox" ${c.active?'checked':''} onchange="Coupons.update(${c.id},{active:this.checked});showToast(this.checked?'Coupon active':'Coupon disabled');renderCoupons()"/><span class="tog-sl"></span></label>
+      <button class="tbl-btn tb-del" onclick="Coupons.delete(${c.id});showToast('Deleted.');renderCoupons()">Delete</button>
+    </div>`).join('');
+}
+function showAddCoupon(){document.getElementById('coupon-form').style.display='block';}
+function saveCoupon(){
+  const code=document.getElementById('cp-code').value.trim().toUpperCase();
+  const disc=Number(document.getElementById('cp-disc').value);
+  if(!code||!disc){showToast('Code and discount required.','error');return;}
+  Coupons.add({code,discount:disc,expiry:document.getElementById('cp-exp').value||null,maxUses:Number(document.getElementById('cp-max').value)||0,description:document.getElementById('cp-desc').value,active:true});
+  showToast('Coupon created!','success'); document.getElementById('coupon-form').style.display='none'; renderCoupons();
+}
+
+/* ════ PRESETS ════ */
+function renderPresets(){
+  const fabrics=FabricPresets.get();
+  document.getElementById('fabric-tags').innerHTML=fabrics.map(f=>`<div class="preset-tag">${f}<button onclick="FabricPresets.remove('${f}');renderPresets()">×</button></div>`).join('');
+  const sizes=SizePresets.get();
+  const cats=Categories.getAll();
+  document.getElementById('size-preset-editor').innerHTML=cats.map(c=>`<div style="margin-bottom:14px">
+    <div style="font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px">${c.label}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px" id="size-prev-${c.id}">${(sizes[c.id]||[]).map(s=>`<span class="sz-tag">${s}<button onclick="removeSzPreset('${c.id}','${s}')">×</button></span>`).join('')}</div>
+    <div class="sz-add-row"><input type="text" id="sz-inp-${c.id}" class="form-input" placeholder="Add sizes..." style="flex:1"/><button class="btn btn-sm btn-blue" onclick="addSzPreset('${c.id}')">Add</button></div>
+  </div>`).join('');
+}
+function addFabric(){const v=document.getElementById('fabric-inp').value.trim();if(!v)return;FabricPresets.add(v);document.getElementById('fabric-inp').value='';renderPresets();}
+function addSzPreset(catId){const v=document.getElementById('sz-inp-'+catId).value.trim();if(!v)return;const s=SizePresets.get();s[catId]=s[catId]||[];v.split(',').forEach(x=>{const t=x.trim();if(t&&!s[catId].includes(t))s[catId].push(t);});SizePresets.save(s);document.getElementById('sz-inp-'+catId).value='';renderPresets();}
+function removeSzPreset(catId,sz){const s=SizePresets.get();s[catId]=(s[catId]||[]).filter(x=>x!==sz);SizePresets.save(s);renderPresets();}
+
+/* ════ STAFF ════ */
+/* ════ STAFF MANAGEMENT ════ */
+const STAFF_PERMS_LIST = [
+  {id:'sp-products', label:'Manage Products'},
+  {id:'sp-orders',   label:'Manage Orders'},
+  {id:'sp-customers',label:'View Customers'},
+  {id:'sp-analytics',label:'View Analytics'},
+  {id:'sp-coupons',  label:'Manage Coupons'},
+  {id:'sp-categories',label:'Manage Categories'},
+  {id:'sp-homepage', label:'Edit Homepage'},
+  {id:'sp-appearance',label:'Edit Appearance'},
+];
+
+function genStaffId(){
+  const existing=Users.getAll().filter(u=>u.role===ROLES.STAFF).map(u=>u.staffId||'').filter(Boolean);
+  let n=1;
+  while(existing.includes('STF-'+String(n).padStart(3,'0'))) n++;
+  return 'STF-'+String(n).padStart(3,'0');
+}
+
+function toggleStaffForm(){
+  const el=document.getElementById('staff-form-wrap');
+  const open=el.style.display==='none'||!el.style.display;
+  if(open){ openStaffForm(null); } else { closeStaffForm(); }
+}
+
+function openStaffForm(staffId){
+  const el=document.getElementById('staff-form-wrap');
+  el.style.display='block';
+  document.getElementById('sf-edit-id').value=staffId||'';
+  if(staffId){
+    const s=Users.getById(staffId);if(!s)return;
+    document.getElementById('sf-form-title').textContent='Edit Staff — '+s.name;
+    document.getElementById('sf-name').value=s.name||'';
+    document.getElementById('sf-phone').value=s.phone||'';
+    document.getElementById('sf-uname').value=s.username||'';
+    document.getElementById('sf-uname').disabled=true;
+    document.getElementById('sf-sid').value=s.staffId||'';
+    document.getElementById('sf-pw').value='';
+    document.getElementById('sf-pw-label').innerHTML='New Password <span style="color:var(--ink-3);font-weight:400">(leave blank to keep)</span>';
+    // Load permissions
+    const p=s.permissions||{};
+    STAFF_PERMS_LIST.forEach(perm=>{ const el=document.getElementById(perm.id); if(el) el.checked=!!p[perm.id]; });
+  } else {
+    document.getElementById('sf-form-title').textContent='New Staff Account';
+    ['sf-name','sf-phone','sf-uname','sf-pw'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sf-uname').disabled=false;
+    document.getElementById('sf-sid').value=genStaffId();
+    document.getElementById('sf-pw-label').innerHTML='Password <span style="color:var(--red)">*</span>';
+    // Default permissions
+    document.getElementById('sp-products').checked=true;
+    document.getElementById('sp-orders').checked=true;
+    ['sp-customers','sp-analytics','sp-coupons','sp-categories','sp-homepage','sp-appearance'].forEach(id=>{ const el=document.getElementById(id); if(el) el.checked=false; });
+  }
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeStaffForm(){
+  document.getElementById('staff-form-wrap').style.display='none';
+  document.getElementById('sf-uname').disabled=false;
+}
+
+async function saveStaff(){
+  const editId=document.getElementById('sf-edit-id').value;
+  const name=document.getElementById('sf-name').value.trim();
+  const phone=document.getElementById('sf-phone').value.trim();
+  const uname=document.getElementById('sf-uname').value.trim();
+  const sid=document.getElementById('sf-sid').value.trim()||genStaffId();
+  const pw=document.getElementById('sf-pw').value;
+
+  if(!name){showToast('Name is required.','error');return;}
+  if(!uname){showToast('Username is required.','error');return;}
+
+  // Gather permissions
+  const permissions={};
+  STAFF_PERMS_LIST.forEach(perm=>{ permissions[perm.id]=document.getElementById(perm.id)?.checked||false; });
+
+  if(editId){
+    // Editing existing staff
+    const updated={name,phone,staffId:sid,permissions};
+    if(pw){
+      if(pw.length<6){showToast('Password min 6 characters.','error');return;}
+      updated.passwordHash=await hashPassword(pw);
+      delete updated.password;
+    }
+    // Check staffId uniqueness
+    const conflict=Users.getAll().find(u=>u.staffId===sid&&u.id!=editId);
+    if(conflict){showToast('Staff ID already in use.','error');return;}
+    Users.update(editId,updated);
+    showToast('Staff updated!','success');
+  } else {
+    // New staff
+    if(!pw||pw.length<6){showToast('Password min 6 characters.','error');return;}
+    const all=Users.getAll();
+    if(all.find(u=>u.username===uname)){showToast('Username already taken.','error');return;}
+    if(sid&&all.find(u=>u.staffId===sid)){showToast('Staff ID already in use.','error');return;}
+    const res=await Users.addStaff({name,phone,username:uname,password:pw,staffId:sid,permissions});
+    if(!res.ok){showToast(res.msg,'error');return;}
+    showToast('Staff created! ID: '+sid,'success');
+  }
+  closeStaffForm();
+  renderStaff();
+}
+
+function renderStaff(){
+  const staff=Users.getAll().filter(u=>u.role===ROLES.STAFF);
+  const el=document.getElementById('staff-list');
+  if(!staff.length){
+    el.innerHTML='<div class="panel-card" style="text-align:center;padding:48px;color:var(--ink-3)"><div style="font-size:40px;margin-bottom:12px">👥</div><div style="font-weight:700;font-size:16px;margin-bottom:6px">No staff yet</div><p style="font-size:13px">Add your first staff member to help manage the store.</p></div>';
+    return;
+  }
+  el.innerHTML=staff.map(s=>{
+    const perms=s.permissions||{};
+    const grantedPerms=STAFF_PERMS_LIST.filter(p=>perms[p.id]);
+    const orderCount=Orders.getAll().filter(o=>o.handledBy===s.id).length;
+    const lastLogin=LoginHistory.get().find(h=>h.username===s.username);
+    return `<div class="staff-card">
+      <div style="display:flex;align-items:flex-start;gap:12px;width:100%">
+        <div class="staff-av ${s.active?'':'disabled'}">${s.name.charAt(0).toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-weight:700;font-size:15px">${esc(s.name)}</span>
+            <span class="staff-id-badge">${esc(s.staffId||'—')}</span>
+            <span class="status ${s.active?'status-confirmed':''}" style="${!s.active?'background:#eee;color:#999':''}">${s.active?'Active':'Disabled'}</span>
+          </div>
+          <div class="staff-meta">
+            <span>👤 @${esc(s.username)}</span>
+            ${s.phone?`<span>📞 ${esc(s.phone)}</span>`:''}
+            <span>📅 Added ${fmtDate(s.createdAt)}</span>
+            <span>🕐 Last login: ${lastLogin?fmtDateTime(lastLogin.time):'Never'}</span>
+            <span>📋 Orders handled: ${orderCount}</span>
+          </div>
+          <div class="staff-perm-chips">
+            ${STAFF_PERMS_LIST.map(p=>`<span class="staff-perm-chip ${perms[p.id]?'granted':''}">${perms[p.id]?'✓':''} ${p.label}</span>`).join('')}
+          </div>
+        </div>
+        <div class="staff-actions">
+          <button class="tbl-btn tb-ok" onclick="openStaffModal(${s.id})">👁 View</button>
+          <button class="tbl-btn" style="background:var(--blue-lt);color:var(--blue);border:1px solid rgba(0,48,135,.2)" onclick="openStaffForm(${s.id})">✏️ Edit</button>
+          <label class="tog blue" title="${s.active?'Disable':'Enable'} account"><input type="checkbox" ${s.active?'checked':''} onchange="toggleStaffActive(${s.id},this.checked)"/><span class="tog-sl"></span></label>
+          <button class="tbl-btn tb-del" onclick="deleteStaff(${s.id},'${esc(s.name)}')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleStaffActive(id,active){
+  Users.update(id,{active});
+  showToast(active?'Staff account enabled.':'Staff account disabled.', active?'success':'');
+  renderStaff();
+}
+
+function deleteStaff(id,name){
+  if(!confirm(`Delete staff account for "${name}"?\n\nThis cannot be undone.`))return;
+  Users.save(Users.getAll().filter(u=>u.id!=id));
+  showToast('Staff account deleted.','success');
+  renderStaff();
+}
+
+function openStaffModal(id){
+  const s=Users.getById(id);if(!s)return;
+  const perms=s.permissions||{};
+  const orders=Orders.getAll().filter(o=>o.handledBy===s.id);
+  const loginHist=LoginHistory.get().filter(h=>h.username===s.username).slice(0,5);
+  document.getElementById('staff-modal-body').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div class="staff-av" style="width:56px;height:56px;font-size:22px;${!s.active?'background:var(--ink-3)':''}">${s.name.charAt(0).toUpperCase()}</div>
+      <div>
+        <div style="font-family:var(--ff-head);font-size:20px;font-weight:800">${esc(s.name)}</div>
+        <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+          <span class="staff-id-badge">${esc(s.staffId||'No ID')}</span>
+          <span class="status ${s.active?'status-confirmed':''}" style="${!s.active?'background:#eee;color:#999':''}">${s.active?'Active':'Disabled'}</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+      <div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Username</div><div style="font-weight:700">@${esc(s.username)}</div></div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Phone</div><div style="font-weight:700">${esc(s.phone||'—')}</div></div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Orders Handled</div><div style="font-weight:700">${orders.length}</div></div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px"><div style="font-size:10px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Joined</div><div style="font-weight:700">${fmtDate(s.createdAt)}</div></div>
+    </div>
+    <div style="font-family:var(--ff-head);font-size:13px;font-weight:700;margin-bottom:10px">🔐 Permissions</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:18px">
+      ${STAFF_PERMS_LIST.map(p=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;padding:6px 10px;border-radius:6px;background:${perms[p.id]?'rgba(0,48,135,.07)':'var(--bg)'};border:1px solid ${perms[p.id]?'rgba(0,48,135,.2)':'var(--border)'}">
+        <span style="font-size:14px">${perms[p.id]?'✅':'⬜'}</span>
+        <span style="font-weight:${perms[p.id]?'600':'400'};color:${perms[p.id]?'var(--blue)':'var(--ink-3)'}">${p.label}</span>
+      </div>`).join('')}
+    </div>
+    <div style="font-family:var(--ff-head);font-size:13px;font-weight:700;margin-bottom:10px">🕐 Recent Logins</div>
+    ${loginHist.length?loginHist.map(h=>`<div class="login-hist-row"><span style="font-weight:600">@${esc(h.username)}</span><span style="color:var(--ink-3);font-size:11px">${fmtDateTime(h.time)}</span></div>`).join(''):'<div style="color:var(--ink-3);font-size:13px;padding:10px 0">No login history yet.</div>'}
+    <div style="display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
+      <button class="btn btn-blue" onclick="closeStaffModal();openStaffForm(${s.id})">✏️ Edit</button>
+      <label class="tog blue" style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600"><input type="checkbox" ${s.active?'checked':''} onchange="toggleStaffActive(${s.id},this.checked);document.getElementById('staff-modal-bg').classList.remove('open')"/><span class="tog-sl"></span>${s.active?'Disable Account':'Enable Account'}</label>
+    </div>`;
+  document.getElementById('staff-modal-bg').classList.add('open');
+}
+
+function closeStaffModal(){ document.getElementById('staff-modal-bg').classList.remove('open'); }
+
+/* ════ CUSTOMERS ════ */
+function renderCustomers(){
+  const custs=Users.getAll().filter(u=>u.role===ROLES.CUSTOMER);
+  document.getElementById('cust-sub').textContent=custs.length+' registered customers';
+  document.getElementById('cust-tbody').innerHTML=custs.length?custs.map((c,i)=>`<tr><td style="color:var(--ink-3)">${i+1}</td><td style="font-weight:700">${c.name}</td><td>${c.email}</td><td>${c.phone||'—'}</td><td style="font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis">${c.address||'—'}</td><td>${Orders.getByUser(c.id).length}</td><td style="color:var(--ink-3)">${fmtDate(c.createdAt)}</td></tr>`).join(''):'<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--ink-3)">No customers yet.</td></tr>';
+}
+function exportCustomers(){
+  const custs=Users.getAll().filter(u=>u.role===ROLES.CUSTOMER);
+  const rows=[['Name','Email','Phone','Address','Orders','Joined'],...custs.map(c=>[c.name,c.email,c.phone||'',c.address||'',Orders.getByUser(c.id).length,fmtDate(c.createdAt)])];
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='ayaan_customers.csv';a.click();
+  showToast('CSV exported!','success');
+}
+
+/* ════ ANALYTICS ════ */
+function renderAnalytics(){
+  const prods=Products.getAll();
+  const byV=[...prods].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,8), maxV=Math.max(...byV.map(p=>p.views||0),1);
+  document.getElementById('views-chart').innerHTML=byV.map(p=>`<div class="bar-row"><div class="bar-lbl">${p.name}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round((p.views||0)/maxV*100)}%"></div></div><div class="bar-val">${p.views||0}</div></div>`).join('');
+  const cats={};Categories.getAll().forEach(c=>cats[c.id]=0);prods.forEach(p=>{if(cats[p.cat]!==undefined)cats[p.cat]++;});
+  const maxC=Math.max(...Object.values(cats),1);
+  document.getElementById('cat-count-chart').innerHTML=Object.entries(cats).map(([k,v])=>`<div class="bar-row"><div class="bar-lbl">${getCatLabel(k)}</div><div class="bar-track"><div class="bar-fill red" style="width:${Math.round(v/maxC*100)}%"></div></div><div class="bar-val">${v}</div></div>`).join('');
+  const onSale=prods.filter(p=>p.oldPrice).length, tot=prods.length;
+  document.getElementById('sale-ratio-chart').innerHTML=`<div style="display:flex;gap:20px;align-items:center;padding:10px 0"><div style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--red);font-family:var(--ff-head)">${onSale}</div><div style="font-size:11px;color:var(--ink-3)">On Sale</div></div><div style="flex:1;background:var(--bg);border-radius:6px;height:22px;overflow:hidden"><div style="width:${tot?Math.round(onSale/tot*100):0}%;height:100%;background:var(--red);border-radius:6px;transition:width .5s"></div></div><div style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--blue);font-family:var(--ff-head)">${tot-onSale}</div><div style="font-size:11px;color:var(--ink-3)">Regular</div></div></div>`;
+  const badges={new:0,hot:0,sale:0};prods.forEach(p=>{if(badges[p.badge]!==undefined)badges[p.badge]++;});
+  const maxB=Math.max(...Object.values(badges),1);
+  document.getElementById('badge-chart').innerHTML=Object.entries(badges).map(([k,v])=>`<div class="bar-row"><div class="bar-lbl">${k==='new'?'New Arrivals':k==='hot'?'Popular / Hot':'On Sale'}</div><div class="bar-track"><div class="bar-fill green" style="width:${Math.round(v/maxB*100)}%"></div></div><div class="bar-val">${v}</div></div>`).join('');
+}
+
+/* ════ REPORTS ════ */
+function renderReports(){
+  const prods=Products.getAll(), ords=Orders.getAll(), custs=Users.getAll().filter(u=>u.role===ROLES.CUSTOMER);
+  const totalVal=prods.reduce((s,p)=>s+p.price*(p.stock||0),0);
+  const totalOrdVal=ords.reduce((s,o)=>s+(o.total||0),0);
+  document.getElementById('report-stats').innerHTML=`
+    <div class="panel-card"><div class="stat-icon">💰</div><div style="font-family:var(--ff-head);font-size:20px;font-weight:800;color:var(--blue)">${fmtPrice(totalVal)}</div><div class="stat-lbl">Total Inventory Value</div></div>
+    <div class="panel-card"><div class="stat-icon">📋</div><div style="font-family:var(--ff-head);font-size:20px;font-weight:800;color:var(--green)">${fmtPrice(totalOrdVal)}</div><div class="stat-lbl">Total Orders Value</div></div>
+    <div class="panel-card"><div class="stat-icon">👥</div><div style="font-family:var(--ff-head);font-size:20px;font-weight:800;color:var(--red)">${custs.length}</div><div class="stat-lbl">Total Customers</div></div>`;
+  const catVals={};Categories.getAll().forEach(c=>{catVals[c.id]={label:c.label,val:0,cnt:0};});
+  prods.forEach(p=>{if(catVals[p.cat]){catVals[p.cat].val+=p.price*(p.stock||0);catVals[p.cat].cnt++;}});
+  document.getElementById('stock-val-report').innerHTML=Object.values(catVals).map(c=>`<div class="report-row"><div><div style="font-weight:700">${c.label}</div><div style="font-size:11px;color:var(--ink-3)">${c.cnt} products</div></div><strong>${fmtPrice(c.val)}</strong></div>`).join('');
+  const statuses={pending:0,confirmed:0,delivered:0};ords.forEach(o=>{if(statuses[o.status]!==undefined)statuses[o.status]++;});
+  document.getElementById('order-status-report').innerHTML=Object.entries(statuses).map(([k,v])=>`<div class="report-row"><span class="status status-${k}">${k.charAt(0).toUpperCase()+k.slice(1)}</span><strong>${v} orders</strong></div>`).join('');
+}
+function exportReport(){
+  const s=SiteSettings.get(), prods=Products.getAll(), ords=Orders.getAll(), custs=Users.getAll().filter(u=>u.role===ROLES.CUSTOMER);
+  let txt=`AYAAN PWD STORE — REPORT\nGenerated: ${new Date().toLocaleString('en-PK')}\n\n`;
+  txt+=`Total Products: ${prods.length}\nTotal Customers: ${custs.length}\nTotal Orders: ${ords.length}\nInventory Value: ${fmtPrice(prods.reduce((s,p)=>s+p.price*(p.stock||0),0))}\n\n`;
+  txt+=`PRODUCTS:\n`+prods.map(p=>`- ${p.name} | ${getCatLabel(p.cat)} | ${p.fabric} | ${fmtPrice(p.price)} | Stock: ${p.stock||0}`).join('\n');
+  const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(txt);a.download='ayaan_report.txt';a.click();
+  showToast('Report exported!','success');
+}
+
+/* ════ MY ACCOUNT ════ */
+function loadMyAccount(){
+  const u=Session.getUser()||{};
+  document.getElementById('adm-name').value=u.name||MASTER_ADMIN.name||'';
+  document.getElementById('adm-uname').value=u.username||MASTER_ADMIN.username||'';
+  document.getElementById('adm-email').value=u.email||MASTER_ADMIN.email||'';
+  const hist=LoginHistory.get();
+  document.getElementById('login-history-full').innerHTML=!hist.length?'<div style="color:var(--ink-3);font-size:13px">No history yet.</div>':
+    hist.slice(0,10).map(h=>`<div class="login-hist-row"><span style="font-weight:600">${esc(h.username)} <span class="badge badge-${h.role==='admin'?'sale':'new'}" style="vertical-align:middle;font-size:9px">${h.role}</span></span><span style="color:var(--ink-3);font-size:11px">${fmtDateTime(h.time)}</span></div>`).join('');
+}
+async function saveAdminAccount(){
+  const curPw=document.getElementById('adm-cur-pw').value;
+  const newPw=document.getElementById('adm-new-pw').value;
+  const newPw2=document.getElementById('adm-new-pw2').value;
+  document.getElementById('adm-cur-pw-err').textContent='';
+  document.getElementById('adm-pw2-err').textContent='';
+  // Verify current password — compare hashes
+  const curPwHash=await hashPassword(curPw);
+  const defaultHash=await hashPassword(MASTER_ADMIN._rawPw);
+  const savedHash=DB.get('admin_pw_hash')||defaultHash;
+  if(curPwHash!==savedHash){document.getElementById('adm-cur-pw-err').textContent='Incorrect current password.';return;}
+  if(newPw&&newPw.length<6){document.getElementById('adm-pw2-err').textContent='Min 6 characters.';return;}
+  if(newPw&&newPw!==newPw2){document.getElementById('adm-pw2-err').textContent='Passwords do not match.';return;}
+  // Save updated name & email to session
+  const updated={...Session.getUser(),name:document.getElementById('adm-name').value.trim(),email:document.getElementById('adm-email').value.trim()};
+  Session.setUser(updated,ROLES.ADMIN);
+  // Save new password hash (never store plain text)
+  if(newPw){ const newHash=await hashPassword(newPw); DB.set('admin_pw_hash',newHash); }
+  showToast('Credentials saved! Please log in again.','success');
+  setTimeout(()=>{Session.logout();location.href='login.html';},1500);
+}
+
+/* ════ SETTINGS ════ */
+function loadSettings(){
+  const s=SiteSettings.get();
+  document.getElementById('s-autologout').value=s.autoLogoutMinutes||60;
+  document.getElementById('s-threshold').value=s.lowStockThreshold||5;
+}
+function saveSettings(){
+  const s=SiteSettings.get();
+  SiteSettings.save({...s,
+    autoLogoutMinutes:Number(document.getElementById('s-autologout').value)||60,
+    lowStockThreshold:Number(document.getElementById('s-threshold').value)||5
+  });
+  showToast('Settings saved!','success');
+}
+function resetToDefaults(){if(!confirm('Reset all products to defaults? Your custom products will be lost.'))return;DB.del('products');showToast('Products reset.','success');renderProducts();}
+function exportAllData(){
+  const data={products:Products.getAll(),users:Users.getAll().map(u=>{const x={...u};delete x.passwordHash;delete x.password;return x;}),orders:Orders.getAll(),settings:SiteSettings.get(),categories:Categories.getAll(),coupons:Coupons.getAll(),loginHistory:LoginHistory.get(),fabricPresets:FabricPresets.get(),sizePresets:SizePresets.get(),exportedAt:new Date().toISOString()};
+  const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(data,null,2));a.download='ayaan_backup.json';a.click();
+  showToast('Full backup exported!','success');
+}
+
+/* ════ CONTACT ════ */
+function loadContact(){
+  const s=SiteSettings.get();
+  document.getElementById('s-phone').value=s.phone||'';
+  document.getElementById('s-wa').value=s.waPhone||'';
+  document.getElementById('s-addr').value=s.address||'';
+  document.getElementById('s-maps').value=s.mapsLink||'';
+  document.getElementById('s-hours').value=s.hours||'';
+  document.getElementById('s-jazz').value=s.jazzcashNum||'';
+  document.getElementById('s-easy').value=s.easypaisaNum||'';
+  document.getElementById('s-iban').value=s.bankIBAN||'';
+}
+function saveContact(){
+  SiteSettings.save({phone:document.getElementById('s-phone').value,waPhone:document.getElementById('s-wa').value,address:document.getElementById('s-addr').value,mapsLink:document.getElementById('s-maps').value,hours:document.getElementById('s-hours').value,jazzcashNum:document.getElementById('s-jazz').value,easypaisaNum:document.getElementById('s-easy').value,bankIBAN:document.getElementById('s-iban').value});
+  showToast('Contact info saved!','success');
+}
+
+/* ════ INIT ════ */
+renderDashboard();
+</script>
+</body></html>

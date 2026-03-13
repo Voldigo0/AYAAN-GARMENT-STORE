@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Shop — Ayaan PWD Store</title>
+<meta name="description" content="Browse Men's, Women's, Kids & Baba Suits at Ayaan PWD. Filter by category, fabric & price. Order via WhatsApp. Alrasheed Mall, PWD Rawalpindi."/>
+<meta property="og:title" content="Shop All — Ayaan PWD Store"/>
+<meta property="og:description" content="Quality clothing for every family at Ayaan PWD, Alrasheed Mall Rawalpindi."/>
+<meta property="og:type" content="website"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+.catalog-layout{display:grid;grid-template-columns:220px 1fr;gap:24px;max-width:1220px;margin:0 auto;padding:40px 32px;align-items:start}
+.sidebar{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:22px;position:sticky;top:76px}
+.sb-title{font-family:var(--ff-head);font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.04em;text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--red)}
+.sb-group{margin-bottom:22px}
+.sb-label{font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1.5px solid var(--border);background:var(--bg);color:var(--ink-2);font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .2s;font-family:var(--ff-head)}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip.all{width:100%;text-align:center}
+.chip-red.active{background:var(--red);border-color:var(--red)}
+.clear-btn{width:100%;text-align:center;color:var(--red);border-color:rgba(200,16,46,.3);margin-top:6px}
+.clear-btn:hover{background:var(--red);color:#fff}
+
+/* SEARCH */
+.search-bar{display:flex;align-items:center;gap:10px;background:var(--white);border:2px solid var(--border);border-radius:8px;padding:10px 16px;margin-bottom:20px;transition:border-color .2s}
+.search-bar:focus-within{border-color:var(--blue)}
+.search-bar input{flex:1;border:none;outline:none;font-size:14px;color:var(--ink);background:none;font-family:var(--ff-body)}
+
+.catalog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.result-ct{font-size:13px;color:var(--ink-3);font-weight:500}
+.sort-sel{padding:8px 14px;border:2px solid var(--border);border-radius:7px;font-size:13px;color:var(--ink);background:var(--white);cursor:pointer;outline:none;font-family:var(--ff-body)}
+.sort-sel:focus{border-color:var(--blue)}
+
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:16px}
+.no-results{text-align:center;padding:72px 20px;color:var(--ink-3);grid-column:1/-1}
+.no-results div{font-size:44px;margin-bottom:14px}
+.no-results h3{font-family:var(--ff-head);font-size:20px;color:var(--ink);margin-bottom:8px}
+
+/* PD MODAL */
+.pd-modal{max-width:860px;width:100%;display:grid;grid-template-columns:1fr 1fr}
+.pd-img-wrap{border-radius:16px 0 0 16px;min-height:420px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pd-img-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pd-body{padding:34px 28px;overflow-y:auto;max-height:90vh}
+.pd-cat{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:7px}
+.pd-title{font-family:var(--ff-head);font-size:24px;font-weight:800;line-height:1.2;margin-bottom:8px}
+.pd-price{font-size:22px;margin-bottom:18px}
+.pd-row{display:flex;gap:10px;margin-bottom:10px;font-size:13px}
+.pd-lbl{color:var(--ink-3);min-width:64px;font-weight:500}
+.pd-val{color:var(--ink);font-weight:600}
+.size-wrap{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 14px}
+.sz-btn{border:2px solid var(--border);background:var(--bg);color:var(--ink);padding:6px 14px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--ff-head)}
+.sz-btn:hover,.sz-btn.sel{border-color:var(--blue);background:var(--blue-lt);color:var(--blue)}
+.wa-hint{background:var(--blue-lt);border-radius:7px;padding:10px 14px;font-size:12px;color:var(--blue);font-weight:500;margin:10px 0 16px}
+.pd-actions{display:flex;flex-direction:column;gap:10px}
+.pd-close-btn{position:absolute;top:12px;right:12px;z-index:10}
+
+@media(max-width:900px){.catalog-layout{grid-template-columns:1fr;padding:24px 18px}.sidebar{position:static}.pd-modal{grid-template-columns:1fr}.pd-img-wrap{display:none}.pd-body{max-height:80vh}}
+</style>
+</head>
+<body>
+<div id="nav-ph"></div>
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-hero-label">Browse</div>
+    <h1>Full Catalog</h1>
+    <p>Men's · Women's · Kids · Baba Suits — filter, search & order via WhatsApp</p>
+  </div>
+</div>
+
+<div class="catalog-layout">
+  <aside class="sidebar">
+    <div class="sb-title">Filters</div>
+    <div class="sb-group">
+      <div class="sb-label">Category</div>
+      <div class="chips" id="cat-chips">
+        <button class="chip all active" data-cat="all">All Items</button>
+      </div>
+    </div>
+    <div class="sb-group">
+      <div class="sb-label">Deals</div>
+      <div class="chips">
+        <button class="chip chip-red" data-deal="sale">On Sale</button>
+        <button class="chip" data-deal="hot">Popular</button>
+        <button class="chip" data-deal="new">New Arrivals</button>
+      </div>
+    </div>
+    <div class="sb-group">
+      <div class="sb-label">Price</div>
+      <div class="chips">
+        <button class="chip" data-price="0-2000">Under Rs. 2,000</button>
+        <button class="chip" data-price="2000-4000">Rs. 2,000–4,000</button>
+        <button class="chip" data-price="4000-999999">Above Rs. 4,000</button>
+      </div>
+    </div>
+    <button class="chip clear-btn" onclick="clearFilters()">✕ Clear Filters</button>
+  </aside>
+
+  <div>
+    <div class="search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink-3)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-inp" placeholder="Search products, fabric, category..." oninput="renderGrid()"/>
+    </div>
+    <div class="catalog-top">
+      <div class="result-ct" id="result-ct">Loading...</div>
+      <select class="sort-sel" onchange="sortMode=this.value;renderGrid()">
+        <option value="default">Sort: Default</option>
+        <option value="price-asc">Price: Low → High</option>
+        <option value="price-desc">Price: High → Low</option>
+        <option value="name">Name: A–Z</option>
+        <option value="popular">Most Popular</option>
+      </select>
+    </div>
+    <div class="product-grid" id="product-grid"></div>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-bg" id="pd-bg" onclick="closePD(event)">
+  <div class="modal-box pd-modal" id="pd-box">
+    <div class="pd-img-wrap" id="pd-img"></div>
+    <div class="pd-body">
+      <button class="modal-close pd-close-btn" onclick="document.getElementById('pd-bg').classList.remove('open')">×</button>
+      <div class="pd-cat" id="pd-cat"></div>
+      <div class="pd-title" id="pd-title"></div>
+      <div class="pd-price" id="pd-price"></div>
+      <hr class="divider"/>
+      <div class="pd-row"><span class="pd-lbl">Fabric</span><span class="pd-val" id="pd-fabric"></span></div>
+      <div class="pd-row"><span class="pd-lbl">Stock</span><span id="pd-stock"></span></div>
+      <div class="pd-row"><span class="pd-lbl">Sizes</span></div>
+      <div class="size-wrap" id="pd-sizes"></div>
+      <div class="pd-row"><span class="pd-lbl">Details</span><span class="pd-val" id="pd-desc" style="font-weight:400;color:var(--ink-2);line-height:1.7"></span></div>
+      <div class="wa-hint">💬 Ask on WhatsApp for size guide & availability</div>
+      <div class="pd-actions">
+        <button class="btn btn-blue btn-full btn-lg" onclick="addToCartModal()">Add to Cart</button>
+        <a id="pd-wa" href="#" target="_blank" class="btn btn-wa btn-full btn-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </a>
+        <a id="pd-call" href="#" class="btn btn-outline-blue btn-full">📞 Call Store</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer-ph"></div>
+<script src="assets/app.js"></script>
+<script>
+document.getElementById('nav-ph').innerHTML=buildNav('Shop');
+document.getElementById('footer-ph').innerHTML=buildFooter();
+
+const urlP=new URLSearchParams(location.search);
+let filters={cat:urlP.get('cat')||'all',deal:urlP.get('deal')||'',price:''};
+let sortMode='default', curProdId=null, selSize='';
+
+// Build catLabel map from Categories
+const catLabel = {};
+Categories.getAll().forEach(c => { catLabel[c.id] = c.label; });
+
+// Build dynamic category chips
+const catChipsEl = document.getElementById('cat-chips');
+Categories.getVisible().forEach(c => {
+  const btn = document.createElement('button');
+  btn.className = 'chip';
+  btn.dataset.cat = c.id;
+  btn.textContent = c.label;
+  catChipsEl.appendChild(btn);
+});
+
+// Set active chips from URL
+if(filters.cat!=='all') document.querySelectorAll('[data-cat]').forEach(c=>{c.classList.toggle('active',c.dataset.cat===filters.cat)});
+if(filters.deal) {document.querySelectorAll('[data-deal]').forEach(c=>{if(c.dataset.deal===filters.deal){c.classList.add('active')}})}function applyFilters(){
+  let l=Products.getVisible();
+  const q=(document.getElementById('search-inp')?.value||'').toLowerCase();
+  if(filters.cat!=='all')l=l.filter(p=>p.cat===filters.cat);
+  if(filters.deal==='sale')l=l.filter(p=>p.oldPrice);
+  if(filters.deal==='hot')l=l.filter(p=>p.badge==='hot');
+  if(filters.deal==='new')l=l.filter(p=>p.badge==='new');
+  if(filters.price){const[mn,mx]=filters.price.split('-').map(Number);l=l.filter(p=>p.price>=mn&&p.price<=mx)}
+  if(q)l=l.filter(p=>p.name.toLowerCase().includes(q)||p.fabric.toLowerCase().includes(q)||(catLabel[p.cat]||'').toLowerCase().includes(q));
+  if(sortMode==='price-asc')l.sort((a,b)=>a.price-b.price);
+  if(sortMode==='price-desc')l.sort((a,b)=>b.price-a.price);
+  if(sortMode==='name')l.sort((a,b)=>a.name.localeCompare(b.name));
+  if(sortMode==='popular')l.sort((a,b)=>(b.views||0)-(a.views||0));
+  return l;
+}
+
+function renderGrid(){
+  const l=applyFilters();
+  document.getElementById('result-ct').textContent=l.length+' item'+(l.length!==1?'s':'')+' found';
+  if(!l.length){document.getElementById('product-grid').innerHTML='<div class="no-results"><div>🔍</div><h3>No items found</h3><p>Try different filters or <a href="#" onclick="clearFilters()" style="color:var(--blue)">clear all filters</a></p></div>';return}
+  document.getElementById('product-grid').innerHTML=l.map(p=>`
+    <div class="pcard" onclick="openPD(${p.id})">
+      <div class="pcard-img" style="background:${catGrad[p.cat]}">
+        ${p.img?`<img src="${p.img}" alt="${p.name}"/>`:''}
+        <span class="badge badge-${p.badge==='hot'?'hot':p.badge}" style="position:absolute;top:10px;left:10px">${p.badge==='hot'?'Popular':p.badge==='new'?'New':'Sale'}</span>
+        ${(p.stock||0)===0?'<span class="badge" style="position:absolute;top:10px;right:10px;background:#666">Out of Stock</span>':''}
+      </div>
+      <div class="pcard-body">
+        <div class="pcard-name">${p.name}</div>
+        <div class="pcard-sub">${catLabel[p.cat]||p.cat} · ${p.fabric}</div>
+        <div class="pcard-foot"><div>${priceBadge(p)}</div><button class="btn btn-sm btn-outline-blue" onclick="event.stopPropagation();openPD(${p.id})">View</button></div>
+      </div>
+    </div>`).join('');
+}
+
+// Sidebar interactions
+document.querySelectorAll('[data-cat]').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('[data-cat]').forEach(x=>x.classList.remove('active'));c.classList.add('active');filters.cat=c.dataset.cat;renderGrid()}));
+document.querySelectorAll('[data-deal]').forEach(c=>c.addEventListener('click',()=>{const on=c.classList.contains('active');document.querySelectorAll('[data-deal]').forEach(x=>x.classList.remove('active'));filters.deal=on?'':c.dataset.deal;if(!on)c.classList.add('active');renderGrid()}));
+document.querySelectorAll('[data-price]').forEach(c=>c.addEventListener('click',()=>{const on=c.classList.contains('active');document.querySelectorAll('[data-price]').forEach(x=>x.classList.remove('active'));filters.price=on?'':c.dataset.price;if(!on)c.classList.add('active');renderGrid()}));
+function clearFilters(){filters={cat:'all',deal:'',price:''};document.getElementById('search-inp').value='';document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));document.querySelector('[data-cat="all"]').classList.add('active');renderGrid()}
+
+// Product modal
+function openPD(id){
+  const p=Products.getById(id); if(!p)return;
+  Products.addView(id);
+  curProdId=id; selSize=Array.isArray(p.sizes)?p.sizes[0]:p.sizes;
+  document.getElementById('pd-cat').textContent=(catLabel[p.cat]||p.cat)+' · '+p.fabric;
+  document.getElementById('pd-title').textContent=p.name;
+  document.getElementById('pd-price').innerHTML=priceBadge(p);
+  document.getElementById('pd-fabric').textContent=p.fabric;
+  document.getElementById('pd-desc').textContent=p.desc||'';
+  document.getElementById('pd-img').style.background=catGrad[p.cat];
+  document.getElementById('pd-img').innerHTML=p.img?`<img src="${p.img}" alt="${p.name}"/>`:'';
+  const st=p.stock||0;
+  document.getElementById('pd-stock').innerHTML=st<=0?'<span class="stock-out">Out of Stock</span>':st<=5?`<span class="stock-low">Low Stock (${st} left)</span>`:`<span class="stock-ok">In Stock ✓</span>`;
+  const sizes=Array.isArray(p.sizes)?p.sizes:(p.sizes||'').split(',').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('pd-sizes').innerHTML=sizes.map((s,i)=>`<button class="sz-btn ${i===0?'sel':''}" onclick="selSz(this,'${s}')">${s}</button>`).join('');
+  document.getElementById('pd-wa').href=waLink('Assalam o Alaikum! I am interested in '+p.name+' (Size: '+selSize+'). Price: '+fmtPrice(p.price)+'. Please confirm availability.');
+  document.getElementById('pd-call').href=callLink();
+  document.getElementById('pd-bg').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function selSz(btn,s){document.querySelectorAll('.sz-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');selSize=s;const p=Products.getById(curProdId);if(p)document.getElementById('pd-wa').href=waLink('Assalam o Alaikum! I am interested in '+p.name+' (Size: '+s+'). Price: '+fmtPrice(p.price)+'. Please confirm availability.')}
+function addToCartModal(){
+  if(!Session.isLoggedIn()){showToast('Please login to add to cart.','error');setTimeout(()=>location.href='login.html',1200);return}
+  if(!Session.isCustomer()){showToast('Staff/Admin cannot use cart.','error');return}
+  if(!selSize){showToast('Please select a size.','error');return}
+  const result=Cart.add(curProdId,selSize,1);
+  if(!result.ok){showToast(result.msg,'error');return;}
+  showToast('Added to cart! ✓','success');
+  document.getElementById('nav-ph').innerHTML=buildNav('Shop');
+}
+function closePD(e){if(e.target===document.getElementById('pd-bg')){document.getElementById('pd-bg').classList.remove('open');document.body.style.overflow=''}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('pd-bg').classList.remove('open');document.body.style.overflow=''}});
+
+renderGrid();
+// Auto-open product modal if ?pid= param present (e.g. from homepage card click)
+const _pid = urlP.get('pid');
+if(_pid) setTimeout(()=>openPD(Number(_pid)), 100);</script>
+</body></html>

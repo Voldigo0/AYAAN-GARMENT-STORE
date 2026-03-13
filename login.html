@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Login — Ayaan PWD Store</title>
+<meta name="description" content="Login or sign up to your Ayaan PWD account to save your cart and track orders."/>
+<meta name="robots" content="noindex"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+body{background:var(--bg);display:flex;flex-direction:column;min-height:100vh}
+.auth-shell{flex:1;display:grid;grid-template-columns:460px 1fr}
+.auth-left{background:var(--blue);display:flex;flex-direction:column;justify-content:center;padding:64px 52px;position:relative;overflow:hidden}
+.auth-left::before{content:'';position:absolute;top:-80px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(200,16,46,.15)}
+.auth-left::after{content:'';position:absolute;bottom:-40px;left:-30px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.04)}
+.auth-logo{font-family:var(--ff-head);font-size:26px;font-weight:800;margin-bottom:28px}
+.auth-logo .r{color:var(--red)}.auth-logo .b{color:rgba(255,255,255,.9)}
+.auth-h{font-family:var(--ff-head);font-size:clamp(26px,2.8vw,42px);font-weight:800;color:#fff;line-height:1.1;margin-bottom:16px}
+.auth-h em{color:#ffd700;font-style:normal}
+.auth-desc{color:rgba(255,255,255,.5);font-size:14px;line-height:1.8;max-width:320px;margin-bottom:32px}
+.auth-perks{display:flex;flex-direction:column;gap:12px}
+.perk{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.7);font-size:13px}
+.perk-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
+.pay-methods{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1)}
+.pm{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:5px;padding:4px 9px;font-size:11px;font-weight:600;color:rgba(255,255,255,.65)}
+
+.auth-right{background:var(--bg);display:flex;align-items:center;justify-content:center;padding:40px 32px}
+.auth-box{width:100%;max-width:420px}
+
+.auth-tabs{display:flex;background:var(--white);border:2px solid var(--border);border-radius:8px;padding:4px;margin-bottom:28px}
+.auth-tab{flex:1;padding:9px;border-radius:5px;font-size:13px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;color:var(--ink-3);border:none;background:none;font-family:var(--ff-head)}
+.auth-tab.active{background:var(--red);color:#fff}
+
+.auth-form{display:none}
+.auth-form.active{display:block}
+.auth-form-h{font-family:var(--ff-head);font-size:24px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.auth-form-sub{font-size:13px;color:var(--ink-3);margin-bottom:22px}
+
+.admin-note{background:rgba(200,16,46,.07);border:1.5px solid rgba(200,16,46,.2);border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:12px;color:var(--red-dk);display:flex;align-items:flex-start;gap:8px}
+
+.switch-note{text-align:center;margin-top:18px;font-size:13px;color:var(--ink-3)}
+.switch-note a{color:var(--blue);font-weight:700;cursor:pointer}
+.switch-note a:hover{color:var(--red)}
+
+.top-bar{background:var(--white);border-bottom:3px solid var(--red);padding:14px 28px;display:flex;align-items:center;justify-content:space-between}
+.top-bar-logo{font-family:var(--ff-head);font-size:20px;font-weight:800}
+.top-bar-logo .r{color:var(--red)}.top-bar-logo .b{color:var(--blue)}
+.back-link{font-size:13px;color:var(--blue);font-weight:600;display:flex;align-items:center;gap:5px}
+.back-link:hover{color:var(--red)}
+
+@media(max-width:800px){.auth-shell{grid-template-columns:1fr}.auth-left{display:none}.auth-right{min-height:calc(100vh - 60px)}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <a href="index.html" class="top-bar-logo"><span class="r">Ayaan</span> <span class="b">PWD</span></a>
+  <a href="index.html" class="back-link">← Back to Store</a>
+</div>
+
+<div class="auth-shell">
+  <div class="auth-left">
+    <div class="auth-logo"><span class="r">Ayaan</span> <span class="b">PWD</span></div>
+    <h2 class="auth-h">Your local store,<br/><em>now online.</em></h2>
+    <p class="auth-desc">Browse the full catalog, save your cart, track orders — all from Alrasheed Mall, PWD Rawalpindi.</p>
+    <div class="auth-perks">
+      <div class="perk"><div class="perk-dot"></div>Save items to cart, order via WhatsApp</div>
+      <div class="perk"><div class="perk-dot"></div>Track your inquiry / order status</div>
+      <div class="perk"><div class="perk-dot"></div>New arrivals & EID deals first</div>
+      <div class="perk"><div class="perk-dot"></div>No card required — COD available</div>
+    </div>
+    <div class="pay-methods">
+      <span class="pm">COD</span><span class="pm">JazzCash</span><span class="pm">EasyPaisa</span><span class="pm">Bank Transfer</span>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-box">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-form active" id="form-login">
+        <div class="auth-form-h">Welcome back</div>
+        <div class="auth-form-sub">Login as customer, staff, or admin.</div>
+        <div class="admin-note">🛡 Admin &amp; Staff: use your assigned username (not email). Auto-detected.</div>
+        <div class="form-group">
+          <label class="form-label">Email or Username</label>
+          <input type="text" id="l-id" class="form-input" placeholder="Email or username"/>
+          <div class="form-error" id="l-id-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="l-pw" class="form-input" placeholder="Your password"/>
+            <button class="pw-eye" onclick="togglePw('l-pw',this)">👁</button>
+          </div>
+          <div class="form-error" id="l-pw-err"></div>
+        </div>
+        <button class="btn btn-red btn-full btn-lg" onclick="doLogin()">Login</button>
+        <div class="switch-note">No account? <a onclick="switchTab('signup')">Sign Up Free</a></div>
+      </div>
+
+      <!-- SIGNUP -->
+      <div class="auth-form" id="form-signup">
+        <div class="auth-form-h">Create account</div>
+        <div class="auth-form-sub">Customer sign up — save cart & track orders.</div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="su-name" class="form-input" placeholder="e.g. Ahmed Khan"/>
+          <div class="form-error" id="su-name-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="su-email" class="form-input" placeholder="your@email.com"/>
+          <div class="form-error" id="su-email-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="su-pw" class="form-input" placeholder="Min 6 characters"/>
+            <button class="pw-eye" onclick="togglePw('su-pw',this)">👁</button>
+          </div>
+          <div class="form-error" id="su-pw-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="su-pw2" class="form-input" placeholder="Repeat password"/>
+            <button class="pw-eye" onclick="togglePw('su-pw2',this)">👁</button>
+          </div>
+          <div class="form-error" id="su-pw2-err"></div>
+        </div>
+        <button class="btn btn-red btn-full btn-lg" onclick="doSignup()">Create Account</button>
+        <div class="switch-note">Already have an account? <a onclick="switchTab('login')">Login</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="assets/app.js"></script>
+<script>
+if(Session.isLoggedIn()) location.href = Session.isAdmin()||Session.isStaff() ? 'admin.html' : 'index.html';
+
+function switchTab(t){
+  document.querySelectorAll('.auth-tab').forEach((el,i)=>el.classList.toggle('active',(i===0)===(t==='login')));
+  document.getElementById('form-login').classList.toggle('active',t==='login');
+  document.getElementById('form-signup').classList.toggle('active',t==='signup');
+}
+
+function clrErr(id){const e=document.getElementById(id);if(e)e.textContent='';const inp=document.getElementById(id.replace('-err',''));if(inp)inp.classList.remove('error')}
+function setErr(id,msg){const e=document.getElementById(id);if(e)e.textContent=msg;const inp=document.getElementById(id.replace('-err',''));if(inp)inp.classList.add('error')}
+
+async function doLogin(){
+  const id=document.getElementById('l-id').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  clrErr('l-id-err');clrErr('l-pw-err');
+  if(!id){setErr('l-id-err','Please enter email or username.');return}
+  if(!pw){setErr('l-pw-err','Please enter password.');return}
+
+  // Master admin check (hash compare)
+  const pwHash=await hashPassword(pw);
+  const defaultHash=await hashPassword(MASTER_ADMIN._rawPw);
+  // admin_pw_hash stores a SHA-256 hash (set when admin changes password)
+  const savedHash=DB.get('admin_pw_hash')||defaultHash;
+  if(id===MASTER_ADMIN.username&&pwHash===savedHash){
+    Session.setUser({id:MASTER_ADMIN.id,name:MASTER_ADMIN.name,username:MASTER_ADMIN.username},ROLES.ADMIN);
+    LoginHistory.add(MASTER_ADMIN.username,ROLES.ADMIN);
+    showToast('Welcome, Usman! Opening Admin Dashboard...','success');
+    setTimeout(()=>location.href='admin.html',1100);return;
+  }
+  // Staff check
+  const staffRes=await Users.loginStaff(id,pw);
+  if(staffRes.ok){
+    Session.setUser(staffRes.user,ROLES.STAFF);
+    LoginHistory.add(staffRes.user.username,ROLES.STAFF);
+    showToast('Welcome, '+staffRes.user.name+'!','success');
+    setTimeout(()=>location.href='admin.html',1000);return;
+  }
+  // Customer (email login)
+  const custRes=await Users.loginCustomer(id,pw);
+  if(custRes.ok){
+    Session.setUser(custRes.user,ROLES.CUSTOMER);
+    LoginHistory.add(custRes.user.email,ROLES.CUSTOMER);
+    showToast('Welcome back, '+custRes.user.name.split(' ')[0]+'!','success');
+    setTimeout(()=>location.href='index.html',900);return;
+  }
+  setErr('l-pw-err','Incorrect credentials. Try again.');
+}
+
+async function doSignup(){
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pw=document.getElementById('su-pw').value;
+  const pw2=document.getElementById('su-pw2').value;
+  ['su-name-err','su-email-err','su-pw-err','su-pw2-err'].forEach(clrErr);
+  let ok=true;
+  if(!name||name.length<2){setErr('su-name-err','Name must be at least 2 characters.');ok=false}
+  if(!email||!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){setErr('su-email-err','Valid email required.');ok=false}
+  if(pw.length<6){setErr('su-pw-err','Min 6 characters.');ok=false}
+  if(pw!==pw2){setErr('su-pw2-err','Passwords do not match.');ok=false}
+  if(!ok)return;
+  const res=await Users.addCustomer(name,email,pw);
+  if(res.ok){
+    Session.setUser(res.user,ROLES.CUSTOMER);
+    showToast('Account created! Welcome, '+name.split(' ')[0]+'!','success');
+    setTimeout(()=>location.href='index.html',900);
+  } else setErr('su-email-err',res.msg);
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){document.getElementById('form-login').classList.contains('active')?doLogin():doSignup();}});
+</script>
+</body></html>
